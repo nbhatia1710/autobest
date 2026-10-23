@@ -22,7 +22,7 @@ export default function Hero() {
           muted
           playsInline
           preload="auto"
-          poster="/media/porsche.jpg"
+          poster="/media/hero-poster.jpg"
           onError={() => setFailed(true)}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
@@ -61,6 +61,7 @@ export default function Hero() {
         <div className="video-controls">
           <span>THE AUTOBEST FILM</span>
           <button
+            disabled={failed}
             aria-label={playing ? 'Pause film' : 'Play film'}
             onClick={() =>
               playing ? video.current?.pause() : video.current?.play().catch(() => setFailed(true))
@@ -69,6 +70,7 @@ export default function Hero() {
             {playing ? <Pause size={14} /> : <Play size={14} />}
           </button>
           <button
+            disabled={failed}
             aria-label="Replay film"
             onClick={() => {
               if (video.current) {

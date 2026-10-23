@@ -1,4 +1,12 @@
 import { test, expect } from '@playwright/test';
+async function loadPhotos(page) {
+  await page.locator('img').evaluateAll(async (images) => {
+    images.forEach((image) => {
+      image.loading = 'eager';
+    });
+    await Promise.all(images.map((image) => image.decode().catch(() => {})));
+  });
+}
 test('customer journey: video, search, details, purchase, stock and route protection', async ({
   page,
 }) => {
@@ -6,11 +14,13 @@ test('customer journey: video, search, details, purchase, stock and route protec
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /your next chapter/i, level: 1 })).toBeVisible();
-  await page.waitForFunction(() => document.querySelector('video')?.videoWidth > 0);
-  await page.locator('video').evaluate((v) => {
+  await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
+  await page.locator('video').evaluate(async (v) => {
     v.pause();
-    v.currentTime = 3.9;
+    v.currentTime = 3.8;
+    await new Promise((resolve) => v.addEventListener('seeked', resolve, { once: true }));
   });
+  await loadPhotos(page);
   await page.screenshot({ path: 'docs/home-desktop.png', fullPage: true });
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
   await page.getByRole('button', { name: 'Explore as customer' }).click();
@@ -37,6 +47,7 @@ test('customer journey: video, search, details, purchase, stock and route protec
   await expect(page.getByRole('alert')).toContainText('Minimum price');
   await page.getByRole('button', { name: 'Clear filters', exact: true }).click();
   await expect(page.locator('.vehicle-card')).toHaveCount(6);
+  await loadPhotos(page);
   await page.screenshot({ path: 'docs/collection-desktop.png', fullPage: true });
   await page.goto('/admin');
   await expect(page.getByRole('heading', { name: 'Administrator access required.' })).toBeVisible();
@@ -89,6 +100,7 @@ test('registration validation and mobile reduced-motion layout', async ({ page }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
+  await loadPhotos(page);
   await page.screenshot({ path: 'docs/showroom-mobile.png', fullPage: true });
   await page.getByRole('button', { name: /Explore Porsche/ }).click();
   await expect(page.getByRole('dialog')).toBeVisible();

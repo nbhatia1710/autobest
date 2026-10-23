@@ -16,13 +16,11 @@ it('sends bearer tokens and uses the search endpoint', async () => {
 });
 it('expires auth on 401 and preserves server conflict messages', async () => {
   const expired = vi.fn();
-  const fetcher = vi
-    .fn()
-    .mockResolvedValue({
-      ok: false,
-      status: 401,
-      json: async () => ({ error: { message: 'Session expired' } }),
-    });
+  const fetcher = vi.fn().mockResolvedValue({
+    ok: false,
+    status: 401,
+    json: async () => ({ error: { message: 'Session expired' } }),
+  });
   await expect(createApiClient('/api', () => null, expired, fetcher).list({})).rejects.toThrow(
     'Session expired',
   );

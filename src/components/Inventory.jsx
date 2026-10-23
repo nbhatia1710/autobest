@@ -138,13 +138,28 @@ export default function Inventory() {
             <select
               id="make"
               value={filters.make}
-              onChange={(e) => setFilters({ ...filters, make: e.target.value })}
+              onChange={(e) => {
+                if (e.target.value === '__custom__') {
+                  setAdvanced(true);
+                  setFilters({ ...filters, make: '' });
+                } else setFilters({ ...filters, make: e.target.value });
+              }}
             >
               <option value="">All makes</option>
-              {['Audi', 'BMW', 'Honda', 'Mercedes-Benz', 'Porsche', 'Tesla'].map((m) => (
+              {[
+                ...new Set([
+                  'Audi',
+                  'BMW',
+                  'Honda',
+                  'Mercedes-Benz',
+                  'Porsche',
+                  'Tesla',
+                  ...(filters.make ? [filters.make] : []),
+                ]),
+              ].map((m) => (
                 <option key={m}>{m}</option>
               ))}
-              <option value="other">Other (use custom make)</option>
+              <option value="__custom__">Other make…</option>
             </select>
             <button
               className={`filter-toggle ${advanced ? 'active' : ''}`}
@@ -159,7 +174,7 @@ export default function Inventory() {
               <label className="field">
                 <span>Custom make</span>
                 <input
-                  value={filters.make === 'other' ? '' : filters.make}
+                  value={filters.make}
                   onChange={(e) => setFilters({ ...filters, make: e.target.value })}
                   placeholder="Any manufacturer"
                 />

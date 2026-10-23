@@ -207,7 +207,7 @@ em {
   min-height: 590px;
   position: relative;
   overflow: hidden;
-  background: #080a08 url('/media/porsche.jpg') center/cover;
+  background: #080a08 url('/media/hero-poster.jpg') center/cover;
 }
 .hero-video {
   position: absolute;
@@ -1387,6 +1387,16 @@ td small {
   }
 }
 @media (max-width: 520px) {
+  .hero-video {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    top: 45px;
+    object-fit: contain;
+    object-position: center;
+  }
+  .hero-copy {
+    bottom: 95px;
+  }
   .demo-banner > span:last-child {
     font-size: 7px;
   }
@@ -1402,7 +1412,8 @@ td small {
     letter-spacing: 1.8px;
   }
   .hero {
-    min-height: 570px;
+    min-height: 650px;
+    background: #080a08;
   }
   .hero-topline {
     top: 25px;
