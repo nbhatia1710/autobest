@@ -130,3 +130,29 @@ Address these issues found in the current backend:
 7. **Git:** Preserve the existing public history; do not rewrite commits or force-push. Follow the repository's current AI co-author and commit-message instructions. Commit only the backend hardening changes and related documentation/tests. Leave unrelated user changes untouched and uncommitted.
 
 At the end, summarize what changed, any remaining launch requirements, the exact verification results, and the commit hash.
+
+## Prompt 3 (Local server testing)
+
+run backend server and frontend locally so i can test before final deployment
+
+## Prompt 4 (Vehicle catalog & real photography update)
+
+ok one last request
+
+change cars and images for following models and details in frontend
+
+BMW M340i petrol 2023 Manufactured 2023 registered Single owner white colour 17500 km driven loadings- fulll system quad exhaust , stage-2 mapped Inline-6 Engine 520 BHP Power 650nm Torque asking price 52.25Lakh Rupees INR
+
+Mercedes Benz GLS-450d diesel 2024 manufactured 2025 registered single owner obsedian grey colour 25000km driven
+Inline-6 Engine power 390 bhp 750nm torque asking price 1.21 crores Rupees INR
+
+BMW 5 Series 530d Msports diesel 2021 manufactured 2022 registered single owner Midnight blue colour 58000 km  driven Inline-6 Engine 350 bhp power 680 nm torque asking price 42.50 lakh
+
+Toyota Land Cruiser 300 2026 manufactured unregistered white colour 4000 km driven V6 Diesel engine 301 bhp power 700 nm torque asking 2.41 crores inr
+
+Range Rover Sport HSE Dynamic 3.0 Diesel 2025 manufactured 2025 registered 16000 km driven Inline 6 Engine 345 bhp 700 nm torque  colour Sunset Gold Satin Finish  askiing price 1.39 crores INR
+
+Audi A6 45 TFSI Technology 2.0 Petrol 2024 manufactured 2024 registered black colour 37000 km driven inline-4 engine 240 bhp 370 nm torque asking price 49.49 lakhs inr
+
+use original images from web , update cards professionally 
+update backend and data base accordingly

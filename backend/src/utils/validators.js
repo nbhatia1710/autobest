@@ -34,8 +34,8 @@ export function isValidPositiveInteger(value, max = 1000000) {
 export function isValidCurrencyPrice(value) {
   if (value == null || (typeof value === 'string' && value.trim() === '')) return false;
   const num = Number(value);
-  if (!Number.isFinite(num) || num <= 0 || num > 10000000) return false;
-  // Ensure maximum 2 decimal places for USD currency precision
+  if (!Number.isFinite(num) || num <= 0 || num > 1000000000) return false;
+  // Ensure maximum 2 decimal places for currency precision
   return Math.round(num * 100) / 100 === num;
 }
 
@@ -68,7 +68,7 @@ export function validateVehicleInput(data, isUpdate = false) {
 
   if (!isUpdate || data.price !== undefined) {
     if (!isValidCurrencyPrice(data.price)) {
-      errors.price = 'Price must be a positive number up to $10,000,000 with at most 2 decimal places.';
+      errors.price = 'Price must be a positive number up to 1,000,000,000 with at most 2 decimal places.';
     }
   }
 

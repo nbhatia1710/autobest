@@ -43,7 +43,7 @@ function VehicleForm({ vehicle, onSave, busy, error }) {
     <form onSubmit={submit} className="modal-content" noValidate>
       <p className="eyebrow">INVENTORY MANAGEMENT</p>
       <h2>{vehicle ? 'Refine the details.' : 'A new addition.'}</h2>
-      <p className="muted">All prices are in USD. Fields marked * are required.</p>
+      <p className="muted">All prices are in INR. Fields marked * are required.</p>
       {error && (
         <p role="alert" className="error">
           {error}
@@ -54,7 +54,7 @@ function VehicleForm({ vehicle, onSave, busy, error }) {
           ['make', 'Make *', 'text'],
           ['model', 'Model *', 'text'],
           ['year', 'Manufacture year *', 'number'],
-          ['price', 'Price (USD) *', 'number'],
+          ['price', 'Price (INR) *', 'number'],
           ['quantity', 'Quantity in stock *', 'number'],
           ['mileage', 'Mileage (km)', 'number'],
         ].map(([key, label, type]) => (

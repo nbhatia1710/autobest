@@ -56,8 +56,8 @@ it('validates price bounds without making a bad request', async () => {
   start();
   await screen.findByRole('button', { name: /Explore Porsche/ });
   fireEvent.click(screen.getByRole('button', { name: 'Filters' }));
-  fireEvent.change(screen.getByLabelText('Minimum price ($)'), { target: { value: '200' } });
-  fireEvent.change(screen.getByLabelText('Maximum price ($)'), { target: { value: '100' } });
+  fireEvent.change(screen.getByLabelText('Minimum price (₹)'), { target: { value: '200' } });
+  fireEvent.change(screen.getByLabelText('Maximum price (₹)'), { target: { value: '100' } });
   expect(screen.getByRole('alert')).toHaveTextContent('Minimum price');
   expect(state.api.list).toHaveBeenCalledTimes(1);
 });

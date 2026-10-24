@@ -68,28 +68,28 @@ describe('Vehicles Catalog & Search API (/api/vehicles)', () => {
 
   describe('GET /api/vehicles/search', () => {
     it('returns 401 Unauthorized if not authenticated', async () => {
-      const res = await request(app).get('/api/vehicles/search?make=Porsche');
+      const res = await request(app).get('/api/vehicles/search?make=Toyota');
       expect(res.status).toBe(401);
     });
 
     it('filters vehicles by make (case-insensitive)', async () => {
       const res = await request(app)
-        .get('/api/vehicles/search?make=porsche')
+        .get('/api/vehicles/search?make=toyota')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(1);
-      expect(res.body[0].make).toBe('Porsche');
+      expect(res.body[0].make).toBe('Toyota');
     });
 
     it('filters vehicles by model', async () => {
       const res = await request(app)
-        .get('/api/vehicles/search?model=GT')
+        .get('/api/vehicles/search?model=GLS')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(1);
-      expect(res.body[0].model).toBe('AMG GT');
+      expect(res.body[0].model).toBe('GLS 450d');
     });
 
     it('filters vehicles by category', async () => {
@@ -98,32 +98,34 @@ describe('Vehicles Catalog & Search API (/api/vehicles)', () => {
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(1);
-      expect(res.body[0].model).toBe('CR-V');
+      expect(res.body.length).toBe(3);
+      for (const v of res.body) {
+        expect(v.category).toBe('SUV');
+      }
     });
 
     it('filters vehicles by price range', async () => {
       const res = await request(app)
-        .get('/api/vehicles/search?min_price=70000&max_price=100000')
+        .get('/api/vehicles/search?min_price=4000000&max_price=6000000')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(3);
-      // Mercedes-Benz AMG GT (98500), BMW M5 (86400), Honda CR-V (72900)
+      // BMW 530d (4250000), Audi A6 (4949000), BMW M340i (5225000)
       for (const vehicle of res.body) {
-        expect(vehicle.price).toBeGreaterThanOrEqual(70000);
-        expect(vehicle.price).toBeLessThanOrEqual(100000);
+        expect(vehicle.price).toBeGreaterThanOrEqual(4000000);
+        expect(vehicle.price).toBeLessThanOrEqual(6000000);
       }
     });
 
     it('combines multiple filter criteria', async () => {
       const res = await request(app)
-        .get('/api/vehicles/search?category=Sedan&max_price=50000')
+        .get('/api/vehicles/search?category=Sedan&max_price=4500000')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(1);
-      expect(res.body[0].make).toBe('Tesla');
+      expect(res.body[0].model).toBe('5 Series 530d M Sport');
     });
 
     it('returns empty array when no vehicles match the search criteria', async () => {

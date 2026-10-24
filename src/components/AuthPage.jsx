@@ -42,7 +42,7 @@ export default function AuthPage({ register = false }) {
   return (
     <main className="auth-page">
       <div className="auth-visual">
-        <img src="/media/porsche.jpg" alt="Porsche on a scenic road" />
+        <img src="/media/bmw-m340i.jpg" alt="BMW M340i in Alpine White" />
         <div>
           <p className="eyebrow">AUTOBEST MOTORS</p>
           <h2>

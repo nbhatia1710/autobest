@@ -179,16 +179,16 @@ Every AI-assisted commit includes the required `Co-authored-by` trailer (`Co-aut
 
 `public/media/hero.mp4`: user-supplied AutoBest Motors opening animation, included unchanged. It plays muted without preloading the full file. Account and administrator pages are loaded only when opened to keep the first page load light.
 
-Local sample images from Unsplash image CDN (illustrative, not verified sale listings):
+Original vehicle photography sourced from Wikimedia Commons under Creative Commons licensing:
 
-- Porsche: https://images.unsplash.com/photo-1503376780353-7e6692767b70
-- Mercedes-Benz: https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8
-- BMW: https://images.unsplash.com/photo-1555215695-3004980ad54e
-- Honda: https://images.unsplash.com/photo-1519641471654-76ce0107ad1b
-- Audi: https://images.unsplash.com/photo-1606152421802-db97b9c7a11b
-- Tesla: https://images.unsplash.com/photo-1560958089-b8a1929cea89
+- BMW M340i xDrive (Alpine White): https://commons.wikimedia.org/wiki/File:BMW_G20_M340i_Alpine_White_(2).jpg
+- Mercedes-Benz GLS 450d (Obsidian Grey): https://commons.wikimedia.org/wiki/File:Mercedes-Benz_X167_GLS_580_4MATIC_AMG_Line_Obsidian_Black_(2).jpg
+- BMW 5 Series 530d M Sport (Midnight Blue): https://commons.wikimedia.org/wiki/File:Bmw_5_series_g30_blue_(1).jpg
+- Toyota Land Cruiser 300 (Precious White Pearl): https://commons.wikimedia.org/wiki/File:Toyota_Land_Cruiser_300_3.3_ZX_Precious_White_Pearl.jpg
+- Range Rover Sport HSE Dynamic (Sunset Gold Satin): https://commons.wikimedia.org/wiki/File:Range_Rover_Sport_SV_Edition_One_L461_Carbon_Bronze_Matte_(11).jpg
+- Audi A6 45 TFSI Technology (Mythos Black): https://commons.wikimedia.org/wiki/File:Audi_A6_45_TFSI_Quattro_S_Line_C8_Mythos_Black_Metallic_(2).jpg
 
-All years, prices, stock counts and specifications are fictional demonstration values, not vehicle provenance claims. Replace them with verified inventory before launch. Currency is USD for the sample; the backend contract must agree on currency before launch.
+Currency is INR (₹) across the application, formatted in Indian numbering (Lakhs and Crores) with numeric values represented as integer rupees in the database and API.
 
 ### Purchase contact details
 

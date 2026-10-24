@@ -85,7 +85,7 @@ it('demo supports CRUD, search bounds and rejects bad or missing inventory', asy
       max_price: '90000',
     }),
   ).toHaveLength(1);
-  expect(await api.list({ min_price: '200000' })).toHaveLength(0);
+  expect(await api.list({ min_price: '50000000' })).toHaveLength(0);
   expect(await api.list({ max_price: '1' })).toHaveLength(0);
   expect((await api.update(added.id, { ...car, price: 90000 })).price).toBe(90000);
   await api.remove(added.id);

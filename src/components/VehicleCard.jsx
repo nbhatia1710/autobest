@@ -1,5 +1,6 @@
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
-import { money } from '../lib/seed';
+import { money, formatIndianLakhsCrores } from '../lib/seed';
+
 export function VehicleImage({ vehicle, ...props }) {
   return (
     <img
@@ -13,6 +14,7 @@ export function VehicleImage({ vehicle, ...props }) {
     />
   );
 }
+
 export default function VehicleCard({ vehicle, onOpen, onPurchase, busy }) {
   function tilt(e) {
     if (e.pointerType === 'touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -20,6 +22,9 @@ export default function VehicleCard({ vehicle, onOpen, onPurchase, busy }) {
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.transform = `perspective(1000px) rotateX(${(-(e.clientY - r.top - r.height / 2) / r.height) * 9}deg) rotateY(${((e.clientX - r.left - r.width / 2) / r.width) * 9}deg)`;
   }
+
+  const indianPrice = formatIndianLakhsCrores(vehicle.price);
+
   return (
     <article
       className="vehicle-card"
@@ -54,13 +59,19 @@ export default function VehicleCard({ vehicle, onOpen, onPurchase, busy }) {
           <ArrowUpRight size={21} />
         </button>
         <p className="car-spec">
-          {vehicle.year} <span>·</span> {vehicle.fuel || 'Fuel not listed'} <span>·</span>{' '}
-          {vehicle.transmission || 'Transmission not listed'}
+          {vehicle.year} <span>·</span>{' '}
+          {vehicle.mileage != null
+            ? `${Number(vehicle.mileage).toLocaleString()} km`
+            : vehicle.transmission || 'Automatic'}{' '}
+          <span>·</span> {vehicle.fuel || 'Petrol'}
         </p>
         <div className="car-bottom">
           <div>
             <span className="price">{money(vehicle.price)}</span>
-            <small>{vehicle.quantity} in stock</small>
+            <small>
+              {indianPrice ? `${indianPrice} · ` : ''}
+              {vehicle.quantity} in stock
+            </small>
           </div>
           <button
             className="purchase-link"

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Search, SlidersHorizontal, X, Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth, isDemo } from '../lib/auth';
-import { vehicles as sample, money } from '../lib/seed';
+import { vehicles as sample, money, formatIndianLakhsCrores } from '../lib/seed';
 import { validateFilters } from '../lib/validation';
 import VehicleCard, { VehicleImage } from './VehicleCard';
 import Modal from './Modal';
@@ -162,10 +162,9 @@ export default function Inventory() {
                 ...new Set([
                   'Audi',
                   'BMW',
-                  'Honda',
+                  'Land Rover',
                   'Mercedes-Benz',
-                  'Porsche',
-                  'Tesla',
+                  'Toyota',
                   ...(filters.make ? [filters.make] : []),
                 ]),
               ].map((m) => (
@@ -192,7 +191,7 @@ export default function Inventory() {
                 />
               </label>
               <label className="field">
-                <span>Minimum price ($)</span>
+                <span>Minimum price (₹)</span>
                 <input
                   type="number"
                   min="0"
@@ -201,7 +200,7 @@ export default function Inventory() {
                 />
               </label>
               <label className="field">
-                <span>Maximum price ($)</span>
+                <span>Maximum price (₹)</span>
                 <input
                   type="number"
                   min="0"
@@ -339,17 +338,29 @@ export default function Inventory() {
                   ],
                   ['Exterior', selected.color],
                   ['Manufacture year', selected.year],
+                  ['Registration', selected.registrationYear || selected.year],
+                  ['Ownership', selected.owners || 'Single Owner'],
+                  ['Engine', selected.engine],
+                  ['Power', selected.power],
+                  ['Torque', selected.torque],
                   ['Availability', `${selected.quantity} in stock`],
-                ].map(([k, v]) => (
-                  <div key={k}>
-                    <small>{k}</small>
-                    <strong>{v || 'Not provided'}</strong>
-                  </div>
-                ))}
+                ]
+                  .filter(([, v]) => v != null)
+                  .map(([k, v]) => (
+                    <div key={k}>
+                      <small>{k}</small>
+                      <strong>{v || 'Not provided'}</strong>
+                    </div>
+                  ))}
               </div>
               <div className="detail-price">
                 <span>{money(selected.price)}</span>
-                <small>USD · listed vehicle price</small>
+                <small>
+                  {formatIndianLakhsCrores(selected.price)
+                    ? `${formatIndianLakhsCrores(selected.price)} · `
+                    : ''}
+                  INR listed vehicle price
+                </small>
               </div>
               {user ? (
                 <button
@@ -391,7 +402,11 @@ export default function Inventory() {
               <form onSubmit={confirmPurchase}>
                 <p>
                   Purchase one {purchase.year} {purchase.make} {purchase.model} for{' '}
-                  <strong>{money(purchase.price)}</strong>?
+                  <strong>{money(purchase.price)}</strong>
+                  {formatIndianLakhsCrores(purchase.price)
+                    ? ` (${formatIndianLakhsCrores(purchase.price)})`
+                    : ''}
+                  ?
                 </p>
                 <p className="muted">
                   {isDemo

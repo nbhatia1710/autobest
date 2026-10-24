@@ -185,15 +185,15 @@ describe('Vehicles Management CRUD API (/api/vehicles)', () => {
         .put('/api/vehicles/ab-001')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          price: 125000,
-          color: 'Jet Black Metallic',
+          price: 5500000,
+          color: 'Mineral White',
         });
 
       expect(res.status).toBe(200);
       expect(res.body.id).toBe('ab-001');
-      expect(res.body.price).toBe(125000);
-      expect(res.body.color).toBe('Jet Black Metallic');
-      expect(res.body.make).toBe('Porsche'); // preserves untouched fields
+      expect(res.body.price).toBe(5500000);
+      expect(res.body.color).toBe('Mineral White');
+      expect(res.body.make).toBe('BMW'); // preserves untouched fields
     });
   });
 

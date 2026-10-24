@@ -43,13 +43,13 @@ describe('AutoBest Motors Full End-to-End API Journey', () => {
 
     // 4. Customer searches vehicles
     const searchRes = await request(app)
-      .get('/api/vehicles/search?make=Porsche')
+      .get('/api/vehicles/search?model=M340i')
       .set('Authorization', `Bearer ${token}`);
     expect(searchRes.status).toBe(200);
     expect(searchRes.body.length).toBe(1);
-    const porsche = searchRes.body[0];
-    expect(porsche.id).toBe('ab-001');
-    const initialQty = porsche.quantity;
+    const m340i = searchRes.body[0];
+    expect(m340i.id).toBe('ab-001');
+    const initialQty = m340i.quantity;
 
     // 5. Customer purchases vehicle
     const purchaseRes = await request(app)
