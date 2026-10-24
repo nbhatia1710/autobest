@@ -35,6 +35,7 @@ export default function Hero() {
           className="hero-video"
           playsInline
           autoPlay
+          muted
           preload="none"
           poster="/media/hero-poster.jpg"
           onError={() => setFailed(true)}

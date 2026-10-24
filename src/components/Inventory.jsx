@@ -6,6 +6,7 @@ import { vehicles as sample, money } from '../lib/seed';
 import { validateFilters } from '../lib/validation';
 import VehicleCard, { VehicleImage } from './VehicleCard';
 import Modal from './Modal';
+import Field from './Field';
 const empty = { make: '', model: '', category: '', min_price: '', max_price: '' };
 export default function Inventory() {
   const { user, api } = useAuth();
@@ -22,6 +23,7 @@ export default function Inventory() {
     [sort, setSort] = useState('featured');
   const request = useRef(0),
     filterError = validateFilters(filters);
+  const [customer, setCustomer] = useState({ name: '', email: '', address: '' });
   useEffect(() => {
     if (!user) return;
     const id = ++request.current;
@@ -65,19 +67,29 @@ export default function Inventory() {
             : 0,
     );
   function startPurchase(v) {
+    setCustomer({ name: '', email: user?.email || '', address: '' });
     setNotice('');
     setError('');
     setPurchase(v);
   }
-  async function confirmPurchase() {
+  async function confirmPurchase(event) {
+    event.preventDefault();
+    if (busy) return;
+    const details = Object.fromEntries(
+      Object.entries(customer).map(([key, value]) => [key, value.trim()]),
+    );
+    if (!details.name || !details.address) {
+      setError('Please enter your name and address.');
+      return;
+    }
     setBusy(true);
     setError('');
     try {
-      const updated = await api.purchase(purchase.id);
+      const updated = await api.purchase(purchase.id, details);
       setRows((old) => old.map((v) => (v.id === updated.id ? updated : v)));
       if (selected?.id === updated.id) setSelected(updated);
       setNotice(
-        `${purchase.make} ${purchase.model}: ${isDemo ? 'demo purchase complete' : 'purchase complete'}. ${updated.quantity} remaining.`,
+        `${purchase.make} ${purchase.model}: ${isDemo ? 'demo purchase complete' : 'purchase complete'}. Thank you!`,
       );
       setPurchase(null);
       setRefresh((n) => n + 1);
@@ -376,16 +388,49 @@ export default function Inventory() {
             <p className="eyebrow">YOUR NEXT CHAPTER</p>
             <h2>{user ? 'Make it yours.' : 'Enter the showroom.'}</h2>
             {user ? (
-              <>
+              <form onSubmit={confirmPurchase}>
                 <p>
                   Purchase one {purchase.year} {purchase.make} {purchase.model} for{' '}
                   <strong>{money(purchase.price)}</strong>?
                 </p>
                 <p className="muted">
                   {isDemo
-                    ? 'This is a demo. Only sample stock will change; no money will be charged.'
-                    : 'This action reduces the available stock by one.'}
+                    ? 'This is a demo. No money will be charged.'
+                    : 'Enter your details to complete your purchase. No online payment is collected.'}
                 </p>
+                <div className="grid gap-4 mt-6">
+                  <Field
+                    label="Full name"
+                    name="purchase-name"
+                    autoComplete="name"
+                    required
+                    maxLength={120}
+                    value={customer.name}
+                    disabled={busy}
+                    onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                  />
+                  <Field
+                    label="Email"
+                    name="purchase-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    value={customer.email}
+                    disabled={busy}
+                    onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                  />
+                  <Field
+                    label="Address"
+                    name="purchase-address"
+                    autoComplete="street-address"
+                    required
+                    maxLength={1000}
+                    value={customer.address}
+                    disabled={busy}
+                    onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                  />
+                </div>
                 {error && (
                   <p role="alert" className="error">
                     {error}
@@ -394,16 +439,17 @@ export default function Inventory() {
                 <div className="flex gap-3 mt-6">
                   <button
                     className="button secondary"
+                    type="button"
                     disabled={busy}
                     onClick={() => setPurchase(null)}
                   >
                     Cancel
                   </button>
-                  <button className="button primary" disabled={busy} onClick={confirmPurchase}>
+                  <button className="button primary" type="submit" disabled={busy}>
                     {busy ? 'Processing…' : 'Confirm purchase'}
                   </button>
                 </div>
-              </>
+              </form>
             ) : (
               <>
                 <p>Sign in to view availability and purchase vehicles.</p>

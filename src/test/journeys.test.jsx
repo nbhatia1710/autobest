@@ -69,6 +69,9 @@ it('opens same-page details and completes a customer purchase', async () => {
   fireEvent.click(await screen.findByRole('button', { name: /Explore Mercedes/ }));
   expect(screen.getByRole('dialog')).toHaveTextContent('AMG GT');
   fireEvent.click(screen.getByRole('button', { name: 'Purchase vehicle' }));
+  fireEvent.change(screen.getByLabelText('Full name'), { target: { value: 'Test Buyer' } });
+  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'buyer@example.com' } });
+  fireEvent.change(screen.getByLabelText('Address'), { target: { value: '12 Test Street' } });
   fireEvent.click(screen.getByRole('button', { name: 'Confirm purchase' }));
   await waitFor(() => expect(screen.getByRole('dialog').textContent).toContain('0 in stock'));
   expect(

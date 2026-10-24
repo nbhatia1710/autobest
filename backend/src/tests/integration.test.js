@@ -55,7 +55,7 @@ describe('AutoBest Motors Full End-to-End API Journey', () => {
     const purchaseRes = await request(app)
       .post('/api/vehicles/ab-001/purchase')
       .set('Authorization', `Bearer ${token}`)
-      .send({ quantity: 1 });
+      .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
     expect(purchaseRes.status).toBe(200);
     expect(purchaseRes.body.quantity).toBe(initialQty - 1);
 
@@ -63,7 +63,7 @@ describe('AutoBest Motors Full End-to-End API Journey', () => {
     const soldOutRes = await request(app)
       .post('/api/vehicles/ab-005/purchase')
       .set('Authorization', `Bearer ${token}`)
-      .send({ quantity: 1 });
+      .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
     expect(soldOutRes.status).toBe(409);
     expect(soldOutRes.body.error.code).toBe('OUT_OF_STOCK');
   });

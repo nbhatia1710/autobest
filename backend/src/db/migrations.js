@@ -50,6 +50,22 @@ export const migrations = [
       `);
     },
   },
+  {
+    version: 3,
+    name: 'purchase_customer_details',
+    up: (db) => db.exec(`CREATE TABLE IF NOT EXISTS purchases (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      vehicle_id TEXT NOT NULL,
+      vehicle_name TEXT NOT NULL,
+      unit_price REAL NOT NULL,
+      quantity INTEGER NOT NULL CHECK(quantity > 0),
+      customer_name TEXT NOT NULL,
+      customer_email TEXT NOT NULL,
+      customer_address TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ); CREATE INDEX IF NOT EXISTS idx_purchases_user ON purchases(user_id);`),
+  },
 ];
 
 export function runMigrations(db) {
@@ -67,7 +83,7 @@ export function runMigrations(db) {
 
   const newlyApplied = [];
 
-  for (const migration of migrations) {
+  for (const migration of [...migrations].sort((a, b) => a.version - b.version)) {
     if (!appliedVersions.has(migration.version)) {
       const applyMigration = db.transaction(() => {
         migration.up(db);

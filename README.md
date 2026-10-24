@@ -189,3 +189,9 @@ Local sample images from Unsplash image CDN (illustrative, not verified sale lis
 - Tesla: https://images.unsplash.com/photo-1560958089-b8a1929cea89
 
 All years, prices, stock counts and specifications are fictional demonstration values, not vehicle provenance claims. Replace them with verified inventory before launch. Currency is USD for the sample; the backend contract must agree on currency before launch.
+
+### Purchase contact details
+
+Purchase now requires full name, email, and address before confirmation. The live API validates and stores these details privately in the SQLite purchases table, linked to the authenticated customer, together with vehicle and price snapshots. Migration 3 runs on backend startup. Stock updates and purchase recording share one transaction. The API returns the updated vehicle without exposing personal details. Demo mode simulates the purchase without saving contact details. This does not process a payment.
+
+The opening film starts muted to support browser autoplay on a fresh visit.

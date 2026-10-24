@@ -11,7 +11,7 @@ Base URL: `VITE_API_BASE_URL`, default `http://localhost:8000/api`. JSON request
 | POST | `/vehicles` | Vehicle fields, no ID required | Created Vehicle |
 | PUT | `/vehicles/:id` | Vehicle fields | Updated Vehicle |
 | DELETE | `/vehicles/:id` | none | 204 or JSON |
-| POST | `/vehicles/:id/purchase` | `{quantity:1}` | Updated Vehicle, including quantity |
+| POST | `/vehicles/:id/purchase` | `{quantity:1,customer:{name,email,address}}` | Updated Vehicle, including quantity |
 | POST | `/vehicles/:id/restock` | `{quantity:positiveInteger}` | Updated Vehicle |
 
 ```json
@@ -46,4 +46,6 @@ Use 400/422 for validation, 401 for invalid/expired authentication, 403 for wron
 
 Server requirements: admin-only add/update/delete/restock, no client-selected role at registration, hashed passwords, server-seeded admins, atomic conditional stock updates, positive integer purchase/restock validation, persisted PostgreSQL data, and consistent errors. Validate metadata server-side too. The browser demo deliberately does not implement security, concurrency, password checking or persistent user accounts.
 
-No payment gateway, sales tax, shipping, financing, order history, pagination protocol, or deployment is implied by the original API brief. Purchase currently records a stock decrement; any payment/order workflow will require a separately agreed contract.
+No payment gateway, sales tax, shipping, financing, order history, pagination protocol, or deployment is implied by the original API brief. Purchase records customer details and a stock decrement; any payment/order workflow will require a separately agreed contract.
+
+Purchase requires trimmed customer name (1–120 characters), valid email (up to 254), and address (1–1000). Migration 3 creates private purchase records linked to the authenticated user, with vehicle/price snapshots. Saving these details and decrementing stock occur in one SQLite transaction. Responses remain updated Vehicle objects and do not expose customer details. No payment is collected.

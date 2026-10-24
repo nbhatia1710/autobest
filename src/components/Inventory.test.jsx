@@ -38,6 +38,9 @@ it('shows a conflict and refreshes inventory instead of overselling', async () =
   state.api.purchase.mockRejectedValue(Object.assign(new Error('Sold out'), { status: 409 }));
   start();
   fireEvent.click(await screen.findByRole('button', { name: 'Purchase' }));
+  fireEvent.change(screen.getByLabelText('Full name'), { target: { value: 'Test Buyer' } });
+  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'buyer@example.com' } });
+  fireEvent.change(screen.getByLabelText('Address'), { target: { value: '12 Test Street' } });
   fireEvent.click(screen.getByRole('button', { name: 'Confirm purchase' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('stock changed');
   await waitFor(() => expect(state.api.list).toHaveBeenCalledTimes(2));

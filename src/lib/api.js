@@ -52,10 +52,10 @@ export function createApiClient(
     add: (body) => request('/vehicles', { method: 'POST', body }),
     update: (id, body) => request(`/vehicles/${encodeURIComponent(id)}`, { method: 'PUT', body }),
     remove: (id) => request(`/vehicles/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-    purchase: (id) =>
+    purchase: (id, customer) =>
       request(`/vehicles/${encodeURIComponent(id)}/purchase`, {
         method: 'POST',
-        body: { quantity: 1 },
+        body: { quantity: 1, customer },
       }),
     restock: (id, quantity) =>
       request(`/vehicles/${encodeURIComponent(id)}/restock`, {

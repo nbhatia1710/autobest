@@ -190,7 +190,7 @@ export class VehicleService {
     return this.vehicleRepository.delete(id);
   }
 
-  purchaseVehicle(id, quantity = 1) {
+  purchaseVehicle(id, quantity = 1, customer, userId) {
     if (!isValidVehicleId(id)) {
       const error = new Error('Invalid vehicle ID format.');
       error.statusCode = 400;
@@ -205,8 +205,24 @@ export class VehicleService {
       throw error;
     }
 
+    const details = {};
+    const errors = {};
+    for (const [field, max] of Object.entries({ name: 120, email: 254, address: 1000 })) {
+      const value = typeof customer?.[field] === 'string' ? customer[field].trim() : '';
+      if (!value || value.length > max) errors[field] = `Enter a valid ${field} (up to ${max} characters).`;
+      details[field] = value;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) errors.email = 'Enter a valid email address.';
+    if (Object.keys(errors).length) {
+      const error = new Error('Please enter your name, email and address.');
+      error.statusCode = 400;
+      error.code = 'VALIDATION_ERROR';
+      error.details = errors;
+      throw error;
+    }
+    details.email = details.email.toLowerCase();
     const numQuantity = Number(quantity);
-    const result = this.vehicleRepository.atomicPurchase(id, numQuantity);
+    const result = this.vehicleRepository.recordPurchase(id, numQuantity, details, userId);
     if (result.status === 'NOT_FOUND') {
       const error = new Error('Vehicle not found.');
       error.statusCode = 404;

@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 export class VehicleRepository {
   constructor(db) {
     this.db = db;
@@ -135,6 +137,20 @@ export class VehicleRepository {
     const stmt = this.db.prepare('DELETE FROM vehicles WHERE id = ?');
     const result = stmt.run(id);
     return result.changes > 0;
+  }
+
+  recordPurchase(id, quantity, customer, userId) {
+    return this.db.transaction(() => {
+      const result = this.atomicPurchase(id, quantity);
+      if (result.status !== 'SUCCESS') return result;
+      this.db.prepare(`INSERT INTO purchases
+        (id, user_id, vehicle_id, vehicle_name, unit_price, quantity, customer_name, customer_email, customer_address)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+          randomUUID(), userId, id, `${result.vehicle.make} ${result.vehicle.model}`,
+          result.vehicle.price, quantity, customer.name, customer.email, customer.address
+        );
+      return result;
+    }).immediate();
   }
 
   atomicPurchase(id, quantity = 1) {

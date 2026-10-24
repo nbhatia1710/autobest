@@ -38,7 +38,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
 
   describe('POST /api/vehicles/:id/purchase', () => {
     it('returns 401 Unauthorized when no authentication token is provided', async () => {
-      const res = await request(app).post('/api/vehicles/ab-001/purchase').send({ quantity: 1 });
+      const res = await request(app).post('/api/vehicles/ab-001/purchase').send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
       expect(res.status).toBe(401);
     });
 
@@ -46,7 +46,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
       const res = await request(app)
         .post('/api/vehicles/unknown-id/purchase')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ quantity: 1 });
+        .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
 
       expect(res.status).toBe(404);
       expect(res.body.error.code).toBe('NOT_FOUND');
@@ -57,7 +57,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
       const res = await request(app)
         .post('/api/vehicles/ab-001/purchase')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ quantity: 1 });
+        .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
 
       expect(res.status).toBe(200);
       expect(res.body.id).toBe('ab-001');
@@ -67,7 +67,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
       const res2 = await request(app)
         .post('/api/vehicles/ab-001/purchase')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ quantity: 1 });
+        .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
 
       expect(res2.status).toBe(200);
       expect(res2.body.quantity).toBe(1);
@@ -78,7 +78,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
       const res = await request(app)
         .post('/api/vehicles/ab-005/purchase')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ quantity: 1 });
+        .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
 
       expect(res.status).toBe(409);
       expect(res.body.error).toBeDefined();
@@ -88,6 +88,34 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
   });
 
   describe('POST /api/vehicles/:id/restock (Admin only)', () => {
+    it('requires customer details without changing stock', async () => {
+      const res = await request(app).post('/api/vehicles/ab-001/purchase')
+        .set('Authorization', `Bearer ${customerToken}`).send({ quantity: 1 });
+      expect(res.status).toBe(400);
+      expect(db.prepare('SELECT quantity FROM vehicles WHERE id = ?').get('ab-001').quantity).toBe(3);
+      expect(db.prepare('SELECT COUNT(*) AS count FROM purchases').get().count).toBe(0);
+    });
+
+    it('persists normalized customer details and the authenticated buyer', async () => {
+      const res = await request(app).post('/api/vehicles/ab-001/purchase')
+        .set('Authorization', `Bearer ${customerToken}`)
+        .send({ quantity: 1, customer: { name: ' Buyer ', email: 'BUYER@example.com', address: ' 12 Test Street ' } });
+      expect(res.status).toBe(200);
+      const purchase = db.prepare('SELECT * FROM purchases').get();
+      expect(purchase).toMatchObject({ customer_name: 'Buyer', customer_email: 'buyer@example.com', customer_address: '12 Test Street', vehicle_id: 'ab-001', quantity: 1 });
+      expect(purchase.user_id).toBe(db.prepare('SELECT id FROM users WHERE email = ?').get('shopper@autobest.com').id);
+      expect(res.body.customer_email).toBeUndefined();
+    });
+
+    it('rolls stock back if recording the purchase fails', async () => {
+      db.exec("CREATE TRIGGER fail_purchase BEFORE INSERT ON purchases BEGIN SELECT RAISE(ABORT, 'write failed'); END;");
+      const res = await request(app).post('/api/vehicles/ab-001/purchase')
+        .set('Authorization', `Bearer ${customerToken}`)
+        .send({ quantity: 1, customer: { name: 'Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
+      expect(res.status).toBe(500);
+      expect(db.prepare('SELECT quantity FROM vehicles WHERE id = ?').get('ab-001').quantity).toBe(3);
+    });
+
     it('returns 401 Unauthorized when missing token', async () => {
       const res = await request(app).post('/api/vehicles/ab-005/restock').send({ quantity: 5 });
       expect(res.status).toBe(401);
@@ -141,7 +169,7 @@ describe('Inventory Operations API (/api/vehicles/:id/purchase & restock)', () =
       const purchaseRes = await request(app)
         .post('/api/vehicles/ab-005/purchase')
         .set('Authorization', `Bearer ${customerToken}`)
-        .send({ quantity: 1 });
+        .send({ quantity: 1, customer: { name: 'Test Buyer', email: 'buyer@example.com', address: '12 Test Street' } });
 
       expect(purchaseRes.status).toBe(200);
       expect(purchaseRes.body.quantity).toBe(4);

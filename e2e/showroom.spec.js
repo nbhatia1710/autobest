@@ -34,6 +34,9 @@ test('customer journey: video, search, details, purchase, stock and route protec
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.screenshot({ path: 'docs/vehicle-details.png' });
   await page.getByRole('button', { name: 'Purchase vehicle', exact: true }).click();
+  await page.getByLabel('Full name', { exact: true }).fill('Test Buyer');
+  await page.getByLabel('Email', { exact: true }).fill('buyer@example.com');
+  await page.getByLabel('Address', { exact: true }).fill('12 Test Street');
   await page.getByRole('button', { name: 'Confirm purchase' }).click();
   await expect(
     page.getByRole('dialog').getByRole('button', { name: 'Out of stock' }),

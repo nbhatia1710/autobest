@@ -58,7 +58,7 @@ export class VehicleController {
   purchase = async (req, res, next) => {
     try {
       const quantity = req.body?.quantity !== undefined ? req.body.quantity : 1;
-      const vehicle = this.vehicleService.purchaseVehicle(req.params.id, quantity);
+      const vehicle = this.vehicleService.purchaseVehicle(req.params.id, quantity, req.body?.customer, req.user.id);
       return res.status(200).json(vehicle);
     } catch (err) {
       next(err);
