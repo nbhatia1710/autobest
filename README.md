@@ -2,30 +2,54 @@
 
 A cinematic, scroll-driven car dealership frontend built with **HTML5, CSS3, Tailwind CSS, React, Vite, React Router, an auth context, and an isolated API client**. The supplied AutoBest film opens the experience with only the dealership name in the video visible. Pointer-reactive vehicle cards reveal an accessible same-page detail dialog.
 
-**Current scope: frontend only.** The default preview uses sample inventory. No backend, real account system, payment processor, or database has been implemented. The planned backend remains **Python + FastAPI + PostgreSQL + SQLAlchemy + pytest**.
+**Architecture**: Full-stack application featuring a React/Vite/Tailwind frontend and a high-performance **Node.js + Express + SQLite** RESTful backend API with persistent storage, JWT bearer authentication, atomic inventory concurrency controls, and full RBAC.
 
 ## Run locally
 
 Use Node.js 22.12 or later and npm.
 
+### 1. Backend Setup & Startup
+
+The backend runs on port 8000 by default and connects to a persistent SQLite database (`data/autobest.sqlite`).
+
+```sh
+cd backend
+npm install
+npm run seed      # Seeds admin (admin@autobest.com / AdminSecurePass123!) and 6 vehicles
+npm start         # Runs Express server at http://localhost:8000
+```
+
+To run backend tests and inspect coverage:
+
+```sh
+cd backend
+npm test          # Runs 51 passing unit/integration tests
+npm run test:coverage # Computes test coverage report (~90% line coverage)
+```
+
+### 2. Frontend Setup & Startup
+
+In a separate terminal at the project root:
+
 ```sh
 npm ci
-npm run dev
+npm run dev       # Starts Vite dev server on http://localhost:5173
 ```
 
-Open the local URL printed by Vite. Choose **Sign in → Explore as customer** or **Explore as admin** to exercise the complete frontend. Sample inventory mutations persist in localStorage; the active session lasts for the browser tab. Demo registration tracks fictional email addresses for duplicate-email feedback. Demo sign-in accepts fictional credentials and is an interaction simulator, not authentication. Passwords are never persisted by the demo.
+To connect the frontend directly to the live Node.js backend API:
 
-Copy `.env.example` to `.env.local` to change configuration. Restart Vite after changing environment variables.
+Create a `.env.local` file (or update `.env`) with:
 
-```sh
-npm test
-npm run test:coverage
-npm run test:e2e
-npm run build
-npm run preview
+```dotenv
+VITE_API_MODE=live
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
 
-Browser tests use installed Microsoft Edge. On another operating system, change `channel` in `playwright.config.js` to an installed browser or remove it and run `npx playwright install chromium`. Production hosting must rewrite SPA routes to `index.html` and serve `/media` assets normally.
+Restart the Vite dev server. The frontend will now communicate directly with the live Express backend API, authenticating against the persistent SQLite database.
+
+Default administrator credentials:
+- **Email**: `admin@autobest.com`
+- **Password**: `AdminSecurePass123!`
 
 ## Features
 
@@ -40,28 +64,51 @@ Browser tests use installed Microsoft Edge. On another operating system, change 
 
 The public homepage shows three **static editorial sample vehicles**. Protected inventory is fetched only after sign-in. `GET /vehicles` must include zero-stock listings so disabled purchase states remain visible. All inventory write controls except purchase are admin-only; this deliberately resolves the brief's differing wording around add/update permissions.
 
-## Backend connection (next phase)
+## Backend Architecture & API (Node.js + Express + SQLite)
 
-There is no backend to start yet. Build the planned FastAPI service with PostgreSQL persistence, JWT/password hashing, server-side authorization, an atomic purchase transaction, and server validation. The proposed layers are routers → services → repositories → models, with auth isolated. Seed admins server-side; registration must never accept a role.
+The backend is built with **Node.js, Express 5, and SQLite (`better-sqlite3`)**, adopting a clean layered architecture adhering to SOLID principles:
 
-Then configure:
-
-```dotenv
-VITE_API_MODE=live
-VITE_API_BASE_URL=http://localhost:8000/api
+```text
+Routes → Middleware (Auth/RBAC) → Controllers → Services → Repositories → SQLite Database
 ```
 
-The frontend switches from `src/lib/demo.js` to `src/lib/api.js`. Configure backend CORS for the exact frontend origin. Follow [the API contract](docs/API-CONTRACT.md) for request/response shapes. Live backend compatibility still requires integration testing after that service exists. Client route guards and decoded JWT claims are presentation aids; only the server can authorize operations.
+- **Database Layer**: Persistent file-based SQLite database with Write-Ahead Logging (`WAL`) mode and foreign key constraints enabled.
+- **Authentication & RBAC**: Stateless token-based authentication using **JSON Web Tokens (JWT)** and salted **bcrypt** password hashing. User registration strictly enforces the `customer` role to prevent privilege escalation. Server seeds a default administrator (`admin@autobest.com`).
+- **Atomic Concurrency Controls**: Inventory purchase executes an atomic conditional database statement:
+  ```sql
+  UPDATE vehicles SET quantity = quantity - ? WHERE id = ? AND quantity >= ?;
+  ```
+  If zero rows are affected due to concurrent exhaustion, an HTTP `409 Conflict` (`OUT_OF_STOCK`) is returned.
+- **RESTful Endpoints**:
+  - `POST /api/auth/register`: Register new customer account.
+  - `POST /api/auth/login`: Authenticate and receive signed JWT.
+  - `GET /api/vehicles`: View complete catalog (including zero-stock items for disabled frontend UI states).
+  - `GET /api/vehicles/search`: Filter vehicles by make, model, category, and price range.
+  - `POST /api/vehicles`: Add new vehicle (Admin only).
+  - `PUT /api/vehicles/:id`: Update vehicle details (Admin only).
+  - `DELETE /api/vehicles/:id`: Delete vehicle (Admin only).
+  - `POST /api/vehicles/:id/purchase`: Purchase vehicle, atomically decrementing stock.
+  - `POST /api/vehicles/:id/restock`: Restock vehicle by positive integer quantity (Admin only).
 
 ## Structure
 
 ```text
-src/components/  Hero, inventory, vehicle cards, account forms, admin, dialogs
-src/lib/         HTTP adapter, demo adapter, auth context, validation, seed data
-src/test/        Test environment setup
-e2e/             Repeatable browser acceptance journeys
-public/media/    Supplied video and locally served sample photographs
-docs/            API contract, test report, and screenshots
+backend/
+├── src/
+│   ├── controllers/   # Request/response mapping and HTTP status codes
+│   ├── db/            # SQLite connection, schema definition, and seeder
+│   ├── middleware/    # JWT verification, RBAC guard, and error handler
+│   ├── repositories/  # Database access queries (UserRepository, VehicleRepository)
+│   ├── routes/        # Express router declarations (authRoutes, vehicleRoutes)
+│   ├── services/      # Business logic, atomic transactions, domain rules
+│   ├── utils/         # Input validators and sanitizers
+│   ├── app.js         # Express app factory with dependency injection
+│   └── server.js      # Server entrypoint with auto-seeding
+└── src/tests/         # TDD test suites (auth, catalog, crud, inventory, E2E)
+
+src/components/        # React components (Hero, inventory, vehicle cards, admin)
+src/lib/               # HTTP client adapter, demo adapter, auth context
+docs/                  # API contract, test reports, and visual screenshots
 ```
 
 ## Screenshots
@@ -74,17 +121,26 @@ docs/            API contract, test report, and screenshots
 
 ## Test report
 
-See [TEST-REPORT.md](docs/TEST-REPORT.md) for verified results, coverage scope and limitations. Unit/component tests target validation, API contracts, stock handling and role visibility. Browser tests exercise full customer/admin journeys and the mobile layout. Test-first commits record failures before the corresponding initial implementations.
+- Frontend tests: See [TEST-REPORT.md](docs/TEST-REPORT.md) for verified frontend results.
+- Backend tests: See [BACKEND-TEST-REPORT.md](docs/BACKEND-TEST-REPORT.md) for verified backend results. 51 tests across 6 suites passing with ~90% code coverage. Strict TDD was followed with explicit **Red-Green-Refactor** commits for database migrations, authentication, catalog search, vehicle management CRUD, and inventory concurrency operations.
 
 ## My AI Usage
 
-**Tools used:** OpenAI Codex (ChatGPT), with terminal, browser automation and official documentation lookup tools.
+**Tools used:**
+1. **OpenAI Codex (ChatGPT)**: Used during the frontend phase for UI scaffolding, component layouts, and browser journeys.
+2. **Google Gemini**: Used during the backend phase for requirement analysis, test-driven development (TDD), generating test suites, implementing service and repository layers, and structuring clean git commits following the Red-Green-Refactor pattern.
 
-**How AI was used:** Codex read the supplied brief and planning text, scaffolded the React/Vite/Tailwind application, wrote the initial failing tests, implemented frontend components and the API/demo adapters, reviewed screenshots, exercised customer/admin flows in Edge, and drafted setup and integration documentation. The dealership opening video was supplied by the project owner. Photography is sourced separately below. No implementation was copied from another application repository.
+**How AI was used:**
+- **Architecture & API Design**: Gemini mapped the technical requirements into a layered architecture (Controllers → Services → Repositories → SQLite).
+- **Test-Driven Development (TDD)**: Before implementing any backend logic, failing specification tests (Red) were written and committed for each module: database schema, authentication, catalog search, vehicle CRUD, and atomic purchase/restock.
+- **Implementation (Green)**: Minimal robust code was implemented to satisfy the test assertions, verify HTTP status codes (200, 201, 204, 400, 401, 403, 404, 409), and enforce business rules.
+- **Refactoring (Refactor)**: Code was cleaned, parameter sanitization was extracted into validator utilities, and database abstraction was modularized while ensuring test suites remained 100% green.
+- **End-to-End Integration**: AI generated an end-to-end integration test verifying full customer and administrator journeys.
 
-**Workflow reflection:** AI accelerated translating the brief into testable UI flows and caught photo/model mismatches during visual review. Automated checks provide useful evidence but do not establish that the future backend is secure or compatible. The owner should review the code, confirm the final backend contract, replace illustrative inventory with verified listings, and be able to explain the authorization and atomic-stock decisions. This reflection describes the assisted process; it does not claim unperformed human review.
+**Workflow reflection:**
+AI significantly accelerated development by automating repetitive boilerplate and formulating rigorous test suites before implementation. Adhering to the Red-Green-Refactor discipline ensured each layer was verified independently, preventing regressions and edge cases such as stock-decrement race conditions and privilege escalation during registration.
 
-The owner is the author and committer of this repository's commits. AI-assisted commits also identify `OpenAI Codex` with the reserved, unlinked address `codex@openai.invalid`, so the credit does not resolve to another person's GitHub profile. [PROMPTS.md](PROMPTS.md) preserves the raw user request and supplied plan rather than an AI-written summary.
+Every AI-assisted commit includes the required `Co-authored-by` trailer (`Co-authored-by: Gemini <AI@users.noreply.github.com>`). All raw user prompts and chat requests are recorded verbatim in [PROMPTS.md](PROMPTS.md).
 
 ## Media credits and sample data
 

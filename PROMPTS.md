@@ -85,3 +85,21 @@ Cross-cutting
 - README: project explanation, backend and frontend setup, screenshots, test report, and the My AI Usage section (tools, how you used them, your reflection).
 - PROMPTS.md with raw logs or links only, no summaries. A share link to this chat can go in there.
 - Public repo link, plus the optional deployed link for bonus points.
+
+
+# Raw user request (Backend Implementation)
+
+frontend is fully ready
+these are the commands for backend 
+create backend using node.js
+go stepp by step do not try to make full backend in one go 
+phase by phase
+commit as per rules given in image for git commit
+git repo link:
+https://github.com/nbhatia1710/autobest
+
+make commits responsibly as per rules in image
+if you dont have any credential ask to me directly do not take any decission by yourself for credentials
+read the commit tules properly
+befir starting go through repo for reference
+do not change any thing in frontend
