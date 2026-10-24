@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 export function createVehicleRoutes(vehicleController, authMiddleware) {
   const router = Router();
-  const { requireAuth } = authMiddleware;
+  const { requireAuth, requireAdmin } = authMiddleware;
 
   // Protect all vehicle endpoints with JWT authentication
   router.use(requireAuth);
@@ -10,6 +10,11 @@ export function createVehicleRoutes(vehicleController, authMiddleware) {
   // Search MUST be registered before dynamic /:id parameter
   router.get('/search', vehicleController.search);
   router.get('/', vehicleController.getAll);
+
+  // Admin-only management endpoints
+  router.post('/', requireAdmin, vehicleController.create);
+  router.put('/:id', requireAdmin, vehicleController.update);
+  router.delete('/:id', requireAdmin, vehicleController.remove);
 
   return router;
 }

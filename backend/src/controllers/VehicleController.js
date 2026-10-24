@@ -27,4 +27,31 @@ export class VehicleController {
       next(err);
     }
   };
+
+  create = async (req, res, next) => {
+    try {
+      const vehicle = this.vehicleService.createVehicle(req.body);
+      return res.status(201).json(vehicle);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  update = async (req, res, next) => {
+    try {
+      const vehicle = this.vehicleService.updateVehicle(req.params.id, req.body);
+      return res.status(200).json(vehicle);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  remove = async (req, res, next) => {
+    try {
+      this.vehicleService.deleteVehicle(req.params.id);
+      return res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  };
 }
