@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { validateVehicleInput } from '../utils/validators.js';
 
 export class VehicleService {
   constructor(vehicleRepository) {
@@ -40,32 +41,18 @@ export class VehicleService {
   }
 
   createVehicle(data) {
-    const { make, model, category, price, quantity, year, image } = data;
-
-    if (!make || !model || !category || price == null || quantity == null) {
-      const error = new Error('Missing required vehicle fields (make, model, category, price, quantity).');
+    const validation = validateVehicleInput(data, false);
+    if (!validation.isValid) {
+      const error = new Error('Check the vehicle details.');
       error.statusCode = 400;
       error.code = 'VALIDATION_ERROR';
+      error.details = validation.errors;
       throw error;
     }
 
-    const numPrice = Number(price);
-    if (Number.isNaN(numPrice) || numPrice <= 0) {
-      const error = new Error('Price must be a positive number.');
-      error.statusCode = 400;
-      error.code = 'INVALID_PRICE';
-      throw error;
-    }
-
-    const numQuantity = Number(quantity);
-    if (!Number.isInteger(numQuantity) || numQuantity < 0) {
-      const error = new Error('Quantity must be a non-negative whole integer.');
-      error.statusCode = 400;
-      error.code = 'INVALID_QUANTITY';
-      throw error;
-    }
-
-    const numYear = year != null ? Number(year) : new Date().getFullYear();
+    const numPrice = Number(data.price);
+    const numQuantity = Number(data.quantity);
+    const numYear = data.year != null ? Number(data.year) : new Date().getFullYear();
     const id = data.id || `ab-${crypto.randomUUID().slice(0, 8)}`;
 
     const vehicle = {
@@ -74,7 +61,7 @@ export class VehicleService {
       price: numPrice,
       quantity: numQuantity,
       year: numYear,
-      image: image || '/media/porsche.jpg',
+      image: data.image || '/media/porsche.jpg',
     };
 
     return this.vehicleRepository.create(vehicle);
@@ -89,29 +76,21 @@ export class VehicleService {
       throw error;
     }
 
-    if (data.price != null) {
-      const numPrice = Number(data.price);
-      if (Number.isNaN(numPrice) || numPrice <= 0) {
-        const error = new Error('Price must be a positive number.');
-        error.statusCode = 400;
-        error.code = 'INVALID_PRICE';
-        throw error;
-      }
-      data.price = numPrice;
+    const validation = validateVehicleInput(data, true);
+    if (!validation.isValid) {
+      const error = new Error('Check the vehicle details.');
+      error.statusCode = 400;
+      error.code = 'VALIDATION_ERROR';
+      error.details = validation.errors;
+      throw error;
     }
 
-    if (data.quantity != null) {
-      const numQuantity = Number(data.quantity);
-      if (!Number.isInteger(numQuantity) || numQuantity < 0) {
-        const error = new Error('Quantity must be a non-negative whole integer.');
-        error.statusCode = 400;
-        error.code = 'INVALID_QUANTITY';
-        throw error;
-      }
-      data.quantity = numQuantity;
-    }
+    const updatePayload = { ...data };
+    if (updatePayload.price != null) updatePayload.price = Number(updatePayload.price);
+    if (updatePayload.quantity != null) updatePayload.quantity = Number(updatePayload.quantity);
+    if (updatePayload.year != null) updatePayload.year = Number(updatePayload.year);
 
-    return this.vehicleRepository.update(id, data);
+    return this.vehicleRepository.update(id, updatePayload);
   }
 
   deleteVehicle(id) {
