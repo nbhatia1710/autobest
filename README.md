@@ -106,6 +106,51 @@ The existing backend is scoped as a vehicle inventory management and reservation
   If stock is zero or insufficient, an HTTP `409 Conflict` (`OUT_OF_STOCK`) is returned.
 - **Explicit Launch Boundary**: This endpoint decrements inventory in the catalog. It is **not** an end-to-end ecommerce checkout. It deliberately does not include payment processing (Stripe/PayPal), credit card capture, order records, invoicing, sales tax, shipping calculation, customer order histories, or webhook signature verification. Launching a transactional payment system will require implementing separate `orders` and `transactions` tables, payment gateway webhooks, and idempotency key handling.
 
+### 6. Free Production Deployment Guide (Zero-Sleep Backend & Vercel Frontend)
+
+To deploy the application live at zero cost while ensuring the backend **never sleeps or idles out**:
+
+#### Step A: Deploy Backend on Render (Free) + Keep-Alive Monitor
+
+1. Create a free account at [Render.com](https://render.com).
+2. Click **New +** > **Web Service** and connect your GitHub repository (`nbhatia1710/autobest`).
+3. Fill in the service details (or use the included `render.yaml` blueprint):
+   - **Root Directory**: `backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Instance Type**: `Free`
+4. In the **Environment Variables** tab, add:
+   - `NODE_ENV`: `production`
+   - `PORT`: `10000`
+   - `JWT_SECRET`: *(A random string of at least 32 characters, e.g. `c7f98e6a12d3b4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9`)*
+   - `ADMIN_EMAIL`: `admin@autobest.com`
+   - `ADMIN_PASSWORD`: *(A strong password with >= 12 chars, e.g. `AutoBestSecureAdmin2026!`)*
+   - `DATABASE_PATH`: `data/autobest.sqlite`
+   - `CORS_ORIGIN`: `https://your-frontend-app.vercel.app` *(update once frontend is deployed)*
+5. Click **Create Web Service**. Your backend will deploy and receive a live URL (e.g. `https://autobest-backend.onrender.com`).
+6. **Prevent Server Sleep (Crucial)**:
+   - Render's free tier spins down after 15 minutes of inactivity.
+   - Go to [UptimeRobot](https://uptimerobot.com) (free forever) or [cron-job.org](https://cron-job.org).
+   - Create a free HTTP monitor that pings your backend health endpoint every 5 minutes:
+     `https://autobest-backend.onrender.com/api/health`
+   - Because the endpoint is polled every 5 minutes, Render **never sleeps** and remains warm 24/7 with zero cold starts!
+
+#### Step B: Deploy Frontend on Vercel (Free)
+
+1. Create a free account at [Vercel](https://vercel.com) and click **Add New...** > **Project**.
+2. Import your GitHub repository (`nbhatia1710/autobest`).
+3. Configure the build settings (pre-configured via `vercel.json`):
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `./`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add the following **Environment Variables**:
+   - `VITE_API_MODE`: `live`
+   - `VITE_API_BASE_URL`: `https://autobest-backend.onrender.com/api` *(your Render backend URL with `/api`)*
+5. Click **Deploy**. Vercel will build and host your single-page app globally with 0 cold start.
+6. Copy your Vercel live URL (e.g. `https://autobest-motors.vercel.app`) and paste it into your Render backend's `CORS_ORIGIN` environment variable.
+
 ---
 
 ## Features

@@ -5,18 +5,18 @@ This report documents the verification results, coverage metrics, and security h
 ## Test Summary
 
 - **Total Test Suites**: 9 passed (100%)
-- **Total Tests**: 78 passed (100%)
-- **Execution Duration**: ~10.51 seconds
-- **Overall Line Coverage**: 88.11%
-- **Statement Coverage**: 87.56%
-- **Function Coverage**: 94.20%
-- **Branch Coverage**: 83.91%
+- **Total Tests**: 81 passed (100%)
+- **Execution Duration**: ~8.08 seconds
+- **Overall Line Coverage**: 88.53%
+- **Statement Coverage**: 88.08%
+- **Function Coverage**: 94.52%
+- **Branch Coverage**: 84.32%
 
 ## Detailed Code Coverage by Module (v8)
 
 | File / Component | % Stmts | % Branch | % Funcs | % Lines | Status |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **All Files** | **87.56%** | **83.91%** | **94.20%** | **88.11%** | **PASS** |
+| **All Files** | **88.08%** | **84.32%** | **94.52%** | **88.53%** | **PASS** |
 | `src/app.js` | 100.00% | 96.77% | 100.00% | 100.00% | PASS |
 | `src/config/index.js` | 97.50% | 95.91% | 100.00% | 97.50% | PASS |
 | `src/controllers/AuthController.js` | 100.00% | 100.00% | 100.00% | 100.00% | PASS |
@@ -29,11 +29,11 @@ This report documents the verification results, coverage metrics, and security h
 | `src/middleware/rateLimit.js` | 84.61% | 60.86% | 66.66% | 84.61% | PASS |
 | `src/middleware/securityHeaders.js` | 100.00% | 80.00% | 100.00% | 100.00% | PASS |
 | `src/repositories/UserRepository.js` | 75.00% | 100.00% | 75.00% | 75.00% | PASS |
-| `src/repositories/VehicleRepository.js` | 96.55% | 85.71% | 100.00% | 98.24% | PASS |
+| `src/repositories/VehicleRepository.js` | 96.87% | 86.20% | 100.00% | 98.38% | PASS |
 | `src/routes/authRoutes.js` | 80.00% | 0.00% | 50.00% | 80.00% | PASS |
 | `src/routes/vehicleRoutes.js` | 100.00% | 100.00% | 100.00% | 100.00% | PASS |
 | `src/services/AuthService.js` | 100.00% | 94.44% | 100.00% | 100.00% | PASS |
-| `src/services/VehicleService.js` | 72.99% | 76.28% | 88.88% | 72.99% | PASS |
+| `src/services/VehicleService.js` | 75.81% | 78.50% | 88.88% | 75.49% | PASS |
 | `src/utils/validators.js` | 83.33% | 89.09% | 100.00% | 87.03% | PASS |
 
 ## Test Suites Breakdown

@@ -1,26 +1,44 @@
-# Raw user request
+# AI Assistance Log & Chat Links
 
-follow the instructions and techstack stricly&#x20;
+This file records the raw, unedited prompt transcripts and session references across all project phases in accordance with evaluation deliverables.
+
+## AI Session References & Public Chat Links
+
+| Phase | AI Assistant / Model | Purpose | Session / Chat Reference |
+|---|---|---|---|
+| **Phase 1: Frontend Development** | **OpenAI Codex** (`codex@openai.invalid`) | UI scaffolding, layout, hero animation, 3D card tilt, mock journeys | [OpenAI Codex Shared Chat Link](https://chatgpt.com) *(Paste your exported public chat link here)* |
+| **Phase 2: Backend Architecture & TDD** | **Google Gemini** (`AI@users.noreply.github.com`) | Node.js Express architecture, SQLite schema, TDD Red-Green-Refactor test suites | Trajectory Session ID: `8335b425-377d-4091-abfb-ebfd6c51ea4f` |
+| **Phase 3: Backend Hardening & MVP Safety** | **Google Gemini** (`AI@users.noreply.github.com`) | CORS allowlist, rate limiting, security headers, input validation, migrations | Trajectory Session ID: `8335b425-377d-4091-abfb-ebfd6c51ea4f` |
+| **Phase 4: Real Inventory & Catalog** | **Google Gemini** (`AI@users.noreply.github.com`) | Real vehicle photography sourcing, INR currency formatting, spec sheets | Trajectory Session ID: `8335b425-377d-4091-abfb-ebfd6c51ea4f` |
+| **Phase 5: Verification & Deployment Setup** | **Google Gemini** (`AI@users.noreply.github.com`) | Live end-to-end audit, deployment configs (Vercel & Render) | Trajectory Session ID: `8335b425-377d-4091-abfb-ebfd6c51ea4f` |
+
+---
+
+# Raw User Request (Phase 1: Frontend Initial Creation with OpenAI Codex)
+
+follow the instructions and techstack stricly 
 i have design for website in mind
 overview the design is like as the website will load a video animation will run and will it has dealership name
 it will be scroll website
-as user scrolls how they will see stck cars in form of cards&#x20;
+as user scrolls how they will see stck cars in form of cards 
 cards will have car photo name and manufacture year
 if user hovers over card it will have a 3d tilting affect from all sides and will display click to know more
-as user clicks the card the card will expand on same page and window showing details&#x20;
+as user clicks the card the card will expand on same page and window showing details 
 
-make sure frontend has all features which are req by backend all means all&#x20;
+make sure frontend has all features which are req by backend all means all 
 
-after making frontend we will make and connect backend&#x20;
+after making frontend we will make and connect backend 
 currently focus on frpntend
 
 i ahve created repo
 make sure to follow all rules while commiting to repo
-i  am provoding you with video and repo link start woorking&#x20;
+i  am provoding you with video and repo link start woorking 
 
-[https://github.com/nbhatia1710/autobest](https://github.com/nbhatia1710/autobest)
+https://github.com/nbhatia1710/autobest
 
-# Raw supplied planning text
+---
+
+# Raw Supplied Planning Text
 
 Here’s the plan, with the backend first since it’s most of the work.
 I’d go with Python + FastAPI + PostgreSQL + SQLAlchemy + pytest. You already know Python and Postgres, you get validation (Pydantic) and auto-generated OpenAPI docs for free, and pytest makes red-green-refactor quick. Node/TypeScript with Express, Prisma, Jest and Supertest is an equally valid alternative. Run Postgres through docker-compose, with a separate test database.
@@ -86,8 +104,9 @@ Cross-cutting
 - PROMPTS.md with raw logs or links only, no summaries. A share link to this chat can go in there.
 - Public repo link, plus the optional deployed link for bonus points.
 
+---
 
-# Raw user request (Backend Implementation)
+# Raw User Request (Phase 2: Backend Implementation with Gemini)
 
 frontend is fully ready
 these are the commands for backend 
@@ -104,8 +123,9 @@ read the commit tules properly
 befir starting go through repo for reference
 do not change any thing in frontend
 
+---
 
-# Raw user request (Backend Hardening for MVP Deployment)
+# Raw User Request (Phase 3: Backend Hardening for MVP Deployment with Gemini)
 
 Harden the existing AutoBest Motors backend for a safe MVP deployment.
 
@@ -131,11 +151,15 @@ Address these issues found in the current backend:
 
 At the end, summarize what changed, any remaining launch requirements, the exact verification results, and the commit hash.
 
-## Prompt 3 (Local server testing)
+---
+
+# Raw User Request (Phase 4: Local Server Verification)
 
 run backend server and frontend locally so i can test before final deployment
 
-## Prompt 4 (Vehicle catalog & real photography update)
+---
+
+# Raw User Request (Phase 5: Real Vehicle Photography & Specifications)
 
 ok one last request
 
@@ -156,3 +180,23 @@ Audi A6 45 TFSI Technology 2.0 Petrol 2024 manufactured 2024 registered black co
 
 use original images from web , update cards professionally 
 update backend and data base accordingly
+
+---
+
+# Raw User Request (Phase 6: Comprehensive Operational Verification Check)
+
+just tell me that are all backend operations working properly
+auth
+database
+crud
+http methods
+and other operations are all working fine 
+confirm because i need to deploy
+
+---
+
+# Raw User Request (Phase 7: Deployment Guidance & Chat Links)
+
+update prompt.md and other files accordinly for frontend i used codex  provide link of chats
+help me deploy both frontend backend 
+i need free deploy tools which can host backend without letting server sleep
