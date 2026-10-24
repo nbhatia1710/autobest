@@ -1,8 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { isValidEmail, isValidPassword } from '../utils/validators.js';
 
 export class AuthService {
   constructor(userRepository, jwtSecret = process.env.JWT_SECRET || 'autobest-secret-key-development', jwtExpiresIn = '24h') {
@@ -12,14 +11,14 @@ export class AuthService {
   }
 
   async register({ email, password }) {
-    if (!email || !EMAIL_REGEX.test(email)) {
+    if (!isValidEmail(email)) {
       const error = new Error('Please enter a valid email address.');
       error.statusCode = 400;
       error.code = 'INVALID_EMAIL';
       throw error;
     }
 
-    if (!password || password.length < 6) {
+    if (!isValidPassword(password, 6)) {
       const error = new Error('Password must be at least 6 characters long.');
       error.statusCode = 400;
       error.code = 'WEAK_PASSWORD';
