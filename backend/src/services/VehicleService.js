@@ -104,4 +104,58 @@ export class VehicleService {
 
     return this.vehicleRepository.delete(id);
   }
+
+  purchaseVehicle(id, quantity = 1) {
+    const numQuantity = Number(quantity);
+    if (!Number.isInteger(numQuantity) || numQuantity < 1) {
+      const error = new Error('Purchase quantity must be a positive whole integer.');
+      error.statusCode = 400;
+      error.code = 'INVALID_QUANTITY';
+      throw error;
+    }
+
+    const result = this.vehicleRepository.atomicPurchase(id, numQuantity);
+    if (result.status === 'NOT_FOUND') {
+      const error = new Error('Vehicle not found.');
+      error.statusCode = 404;
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    if (result.status === 'OUT_OF_STOCK') {
+      const error = new Error('This vehicle just sold out. Please choose another vehicle.');
+      error.statusCode = 409;
+      error.code = 'OUT_OF_STOCK';
+      throw error;
+    }
+
+    return result.vehicle;
+  }
+
+  restockVehicle(id, quantity) {
+    if (quantity == null || typeof quantity === 'string' && quantity.trim() === '') {
+      const error = new Error('Restock quantity must be a positive whole number.');
+      error.statusCode = 400;
+      error.code = 'INVALID_QUANTITY';
+      throw error;
+    }
+
+    const numQuantity = Number(quantity);
+    if (!Number.isInteger(numQuantity) || numQuantity < 1) {
+      const error = new Error('Restock quantity must be a positive whole number.');
+      error.statusCode = 400;
+      error.code = 'INVALID_QUANTITY';
+      throw error;
+    }
+
+    const result = this.vehicleRepository.atomicRestock(id, numQuantity);
+    if (result.status === 'NOT_FOUND') {
+      const error = new Error('Vehicle not found.');
+      error.statusCode = 404;
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    return result.vehicle;
+  }
 }

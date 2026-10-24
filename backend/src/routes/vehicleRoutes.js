@@ -16,5 +16,9 @@ export function createVehicleRoutes(vehicleController, authMiddleware) {
   router.put('/:id', requireAdmin, vehicleController.update);
   router.delete('/:id', requireAdmin, vehicleController.remove);
 
+  // Inventory endpoints
+  router.post('/:id/purchase', vehicleController.purchase);
+  router.post('/:id/restock', requireAdmin, vehicleController.restock);
+
   return router;
 }

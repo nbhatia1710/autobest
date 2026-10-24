@@ -136,4 +136,44 @@ export class VehicleRepository {
     const result = stmt.run(id);
     return result.changes > 0;
   }
+
+  atomicPurchase(id, quantity = 1) {
+    const existing = this.findById(id);
+    if (!existing) {
+      return { status: 'NOT_FOUND' };
+    }
+
+    if (existing.quantity < quantity) {
+      return { status: 'OUT_OF_STOCK', available: existing.quantity };
+    }
+
+    const stmt = this.db.prepare(`
+      UPDATE vehicles
+      SET quantity = quantity - ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND quantity >= ?
+    `);
+
+    const result = stmt.run(quantity, id, quantity);
+    if (result.changes === 0) {
+      return { status: 'OUT_OF_STOCK', available: 0 };
+    }
+
+    return { status: 'SUCCESS', vehicle: this.findById(id) };
+  }
+
+  atomicRestock(id, quantity) {
+    const existing = this.findById(id);
+    if (!existing) {
+      return { status: 'NOT_FOUND' };
+    }
+
+    const stmt = this.db.prepare(`
+      UPDATE vehicles
+      SET quantity = quantity + ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `);
+
+    stmt.run(quantity, id);
+    return { status: 'SUCCESS', vehicle: this.findById(id) };
+  }
 }

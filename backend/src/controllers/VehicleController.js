@@ -54,4 +54,24 @@ export class VehicleController {
       next(err);
     }
   };
+
+  purchase = async (req, res, next) => {
+    try {
+      const quantity = req.body?.quantity !== undefined ? req.body.quantity : 1;
+      const vehicle = this.vehicleService.purchaseVehicle(req.params.id, quantity);
+      return res.status(200).json(vehicle);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  restock = async (req, res, next) => {
+    try {
+      const quantity = req.body?.quantity;
+      const vehicle = this.vehicleService.restockVehicle(req.params.id, quantity);
+      return res.status(200).json(vehicle);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
