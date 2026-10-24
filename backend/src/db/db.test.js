@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { getDatabase, closeDatabase } from './connection.js';
 import { initializeSchema } from './schema.js';
+import { seedDatabase } from './seed.js';
 
 describe('Database and Schema Initialization', () => {
   let db;
@@ -55,4 +56,16 @@ describe('Database and Schema Initialization', () => {
       insert.run('u2', 'duplicate@autobest.com', 'hashedpass2', 'customer');
     }).toThrow();
   });
+
+  it('seeds default admin and vehicles catalog into database', async () => {
+    await seedDatabase(db);
+
+    const admin = db.prepare('SELECT * FROM users WHERE role = ?').get('admin');
+    expect(admin).toBeDefined();
+    expect(admin.email).toBe('admin@autobest.com');
+
+    const vehiclesCount = db.prepare('SELECT COUNT(*) as count FROM vehicles').get();
+    expect(vehiclesCount.count).toBe(6);
+  });
 });
+
