@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Menu, X, UserRound, ShieldCheck, Compass, KeyRound } from 'lucide-react';
 import { useAuth } from './lib/auth';
@@ -120,10 +120,15 @@ function Footer() {
 }
 export default function App() {
   const location = useLocation();
-  useEffect(() => {
-    if (!location.hash) window.scrollTo(0, 0);
-    else setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 100);
-  }, [location.pathname, location.hash]);
+  const initialLocationKey = useRef(location.key);
+  const isReload = useRef(
+    window.performance.getEntriesByType?.('navigation')?.[0]?.type === 'reload',
+  );
+  useLayoutEffect(() => {
+    if ((isReload.current && location.key === initialLocationKey.current) || !location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } else setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 100);
+  }, [location.pathname, location.hash, location.key]);
   return (
     <>
       <a href="#main" className="skip-link">

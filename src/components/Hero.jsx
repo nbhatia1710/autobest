@@ -6,12 +6,26 @@ export default function Hero() {
     [failed, setFailed] = useState(false);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!media.matches) video.current?.play().catch(() => setPlaying(false));
+    const player = video.current;
+    const restartFromBeginning = () => {
+      if (!player) return;
+      try {
+        player.currentTime = 0;
+      } catch {
+        // The loadedmetadata handler retries once the browser has media timing data.
+      }
+    };
+    restartFromBeginning();
+    player?.addEventListener('loadedmetadata', restartFromBeginning, { once: true });
+    if (!media.matches) player?.play().catch(() => setPlaying(false));
     const change = () => {
-      if (media.matches) video.current?.pause();
+      if (media.matches) player?.pause();
     };
     media.addEventListener('change', change);
-    return () => media.removeEventListener('change', change);
+    return () => {
+      player?.removeEventListener('loadedmetadata', restartFromBeginning);
+      media.removeEventListener('change', change);
+    };
   }, []);
   return (
     <section className="hero" aria-label="Welcome to AutoBest Motors">
