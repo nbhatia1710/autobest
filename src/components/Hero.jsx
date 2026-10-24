@@ -19,7 +19,6 @@ export default function Hero() {
         <video
           ref={video}
           className="hero-video"
-          muted
           playsInline
           preload="auto"
           poster="/media/hero-poster.jpg"

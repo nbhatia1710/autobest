@@ -18,6 +18,14 @@
 * {
   box-sizing: border-box;
 }
+::selection {
+  background: rgba(209, 183, 134, 0.3);
+  color: inherit;
+}
+::-moz-selection {
+  background: rgba(209, 183, 134, 0.3);
+  color: inherit;
+}
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 30px;
@@ -208,6 +216,11 @@ em {
   position: relative;
   overflow: hidden;
   background: #080a08 url('/media/hero-poster.jpg') center/cover;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.hero ::selection {
+  background: transparent;
 }
 .hero-video {
   position: absolute;
