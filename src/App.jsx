@@ -3,7 +3,7 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-route
 import { ArrowUpRight, Menu, X, UserRound, ShieldCheck, Compass, KeyRound } from 'lucide-react';
 import { useAuth } from './lib/auth';
 import Hero from './components/Hero';
-import Inventory from './components/Inventory';
+const Inventory = lazy(() => import('./components/Inventory'));
 const AuthPage = lazy(() => import('./components/AuthPage'));
 const Admin = lazy(() => import('./components/Admin'));
 function Protected({ children }) {
@@ -149,7 +149,15 @@ export default function App() {
               element={
                 <main>
                   <Hero />
-                  <Inventory />
+                  <Suspense
+                    fallback={
+                      <div className="route-loading" role="status" aria-label="Loading collection">
+                        <span />
+                      </div>
+                    }
+                  >
+                    <Inventory />
+                  </Suspense>
                   <Approach />
                 </main>
               }
@@ -160,7 +168,19 @@ export default function App() {
                 <Protected>
                   <main>
                     <Hero />
-                    <Inventory />
+                    <Suspense
+                      fallback={
+                        <div
+                          className="route-loading"
+                          role="status"
+                          aria-label="Loading collection"
+                        >
+                          <span />
+                        </div>
+                      }
+                    >
+                      <Inventory />
+                    </Suspense>
                     <Approach />
                   </main>
                 </Protected>

@@ -7,6 +7,61 @@
       if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     </script>
     <meta name="theme-color" content="#141714" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #141714;
+        color: #eeeee6;
+      }
+      .startup-header {
+        height: 94px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        padding: 0 5.5vw;
+        font:
+          20px Arial,
+          sans-serif;
+        letter-spacing: 3px;
+      }
+      .startup-header small {
+        display: block;
+        margin-top: 5px;
+        text-align: center;
+        font-size: 8px;
+        letter-spacing: 4px;
+        color: #d1b786;
+      }
+      .startup-hero {
+        height: min(800px, calc(100svh - 94px));
+        min-height: 500px;
+        background: #080a08;
+        overflow: hidden;
+      }
+      .startup-hero img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      @media (max-width: 800px) {
+        .startup-hero {
+          height: min(78svh, 700px);
+          min-height: 380px;
+        }
+        .startup-hero img {
+          object-fit: contain;
+        }
+      }
+      @media (max-width: 520px) {
+        .startup-hero {
+          height: auto;
+          min-height: 0;
+          aspect-ratio: 16 / 9;
+        }
+      }
+    </style>
     <meta
       name="description"
       content="AutoBest Motors. Discover your next chapter in our curated vehicle collection."
@@ -16,7 +71,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="startup-header">
+        <span>AUTOBEST<small>M O T O R S</small></span>
+      </div>
+      <div class="startup-hero" aria-label="AutoBest Motors showroom is loading">
+        <img src="/media/hero-poster.jpg" alt="" width="1920" height="1080" fetchpriority="high" />
+      </div>
+      <noscript>Please enable JavaScript to browse the showroom.</noscript>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
