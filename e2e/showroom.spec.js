@@ -13,7 +13,8 @@ test('customer journey: video, search, details, purchase, stock and route protec
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /your next chapter/i, level: 1 })).toBeVisible();
+  await expect(page.locator('.hero-video')).toHaveAttribute('autoplay', '');
+  await expect(page.locator('.hero-topline, .hero-copy, .demo-banner')).toHaveCount(0);
   await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
   await page.locator('video').evaluate(async (v) => {
     v.pause();

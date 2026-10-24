@@ -1,6 +1,6 @@
 # AutoBest Motors
 
-A cinematic, scroll-driven car dealership frontend built with **HTML5, CSS3, Tailwind CSS, React, Vite, React Router, an auth context, and an isolated API client**. The supplied AutoBest film opens the experience; pointer-reactive vehicle cards reveal an accessible same-page detail dialog.
+A cinematic, scroll-driven car dealership frontend built with **HTML5, CSS3, Tailwind CSS, React, Vite, React Router, an auth context, and an isolated API client**. The supplied AutoBest film opens the experience with only the dealership name in the video visible. Pointer-reactive vehicle cards reveal an accessible same-page detail dialog.
 
 **Current scope: frontend only.** The default preview uses sample inventory. No backend, real account system, payment processor, or database has been implemented. The planned backend remains **Python + FastAPI + PostgreSQL + SQLAlchemy + pytest**.
 
@@ -13,7 +13,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Choose **Sign in → Explore as customer** or **Explore as admin** to exercise the complete frontend. The demo banner stays visible. Sample inventory mutations persist in localStorage; the active session lasts for the browser tab. Demo registration tracks fictional email addresses for duplicate-email feedback. Demo sign-in accepts fictional credentials and is an interaction simulator, not authentication. Passwords are never persisted by the demo.
+Open the local URL printed by Vite. Choose **Sign in → Explore as customer** or **Explore as admin** to exercise the complete frontend. Sample inventory mutations persist in localStorage; the active session lasts for the browser tab. Demo registration tracks fictional email addresses for duplicate-email feedback. Demo sign-in accepts fictional credentials and is an interaction simulator, not authentication. Passwords are never persisted by the demo.
 
 Copy `.env.example` to `.env.local` to change configuration. Restart Vite after changing environment variables.
 
@@ -29,7 +29,7 @@ Browser tests use installed Microsoft Edge. On another operating system, change 
 
 ## Features
 
-- Local 1080p opening video, play/pause/replay, autoplay-failure poster, and reduced-motion support.
+- Local 1080p opening video with no text layered over the dealership name, a lightweight poster, play/pause/replay controls, and reduced-motion support.
 - Responsive vehicle cards, manufacture year, stock, category, price, photo, multidirectional pointer tilt and “Click to know more” hover prompt.
 - Native modal dialogs with Escape dismissal, focus containment, focus restoration and preserved page position.
 - Registration, login, logout, field validation, duplicate-email feedback, protected routes, bearer token support and expired-session handling.
@@ -67,6 +67,7 @@ docs/            API contract, test report, and screenshots
 ## Screenshots
 
 ![Desktop showroom](docs/home-desktop.png)
+![The dealership video and its name on a phone](docs/hero-mobile.png)
 ![Inventory details](docs/vehicle-details.png)
 ![Administrator inventory](docs/admin-desktop.png)
 ![Mobile showroom](docs/showroom-mobile.png)
@@ -87,7 +88,7 @@ Each AI-assisted commit includes `Co-authored-by: OpenAI Codex <AI@users.noreply
 
 ## Media credits and sample data
 
-`public/media/hero.mp4`: user-supplied AutoBest Motors opening animation, included unchanged.
+`public/media/hero.mp4`: user-supplied AutoBest Motors opening animation, included unchanged. It plays muted without preloading the full file. Account and administrator pages are loaded only when opened to keep the first page load light.
 
 Local sample images from Unsplash image CDN (illustrative, not verified sale listings):
 

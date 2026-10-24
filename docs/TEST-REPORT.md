@@ -1,6 +1,6 @@
 # Frontend verification report
 
-Verified on **24 October 2026 (Asia/Calcutta)** using Windows, Node.js 22.23.2, Vite 7.3.7, Vitest 5.0.5, and Playwright with installed Microsoft Edge.
+Verified on **24 October 2026 (Asia/Calcutta)** using Windows, Node.js 22.23.2, Vite 7.3.7, Vitest 5.0.5, and Playwright with installed Microsoft Edge. The coverage and browser results below are from the previous implementation revision. The clean-hero update has since passed formatting and a production build; the unit and browser suites were not rerun for that final visual/performance change.
 
 | Check | Result |
 | --- | --- |

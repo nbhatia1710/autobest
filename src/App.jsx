@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Menu, X, UserRound, ShieldCheck, Compass, KeyRound } from 'lucide-react';
-import { useAuth, isDemo } from './lib/auth';
+import { useAuth } from './lib/auth';
 import Hero from './components/Hero';
 import Inventory from './components/Inventory';
-import AuthPage from './components/AuthPage';
-import Admin from './components/Admin';
+const AuthPage = lazy(() => import('./components/AuthPage'));
+const Admin = lazy(() => import('./components/Admin'));
 function Protected({ children }) {
   const { user } = useAuth(),
     location = useLocation();
@@ -62,12 +62,6 @@ function Header() {
           </button>
         </div>
       </header>
-      {isDemo && (
-        <div className="demo-banner">
-          <span className="demo-dot" /> FRONTEND PREVIEW <span className="demo-divider">/</span>
-          <span>Sample cars. Demo purchases. No payments.</span>
-        </div>
-      )}
     </>
   );
 }
@@ -137,52 +131,60 @@ export default function App() {
       </a>
       <Header />
       <div id="main">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <main>
-                <Hero />
-                <Inventory />
-                <Approach />
-              </main>
-            }
-          />
-          <Route
-            path="/inventory"
-            element={
-              <Protected>
+        <Suspense
+          fallback={
+            <div className="route-loading" role="status" aria-label="Loading page">
+              <span />
+            </div>
+          }
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
                 <main>
                   <Hero />
                   <Inventory />
                   <Approach />
                 </main>
-              </Protected>
-            }
-          />
-          <Route path="/login" element={<AuthPage key="login" />} />
-          <Route path="/register" element={<AuthPage register key="register" />} />
-          <Route
-            path="/admin"
-            element={
-              <Protected>
-                <Admin />
-              </Protected>
-            }
-          />
-          <Route
-            path="*"
-            element={
-              <main className="empty-state">
-                <h1>A road less travelled.</h1>
-                <p>This page doesn’t exist.</p>
-                <Link className="button primary" to="/">
-                  Return to showroom
-                </Link>
-              </main>
-            }
-          />
-        </Routes>
+              }
+            />
+            <Route
+              path="/inventory"
+              element={
+                <Protected>
+                  <main>
+                    <Hero />
+                    <Inventory />
+                    <Approach />
+                  </main>
+                </Protected>
+              }
+            />
+            <Route path="/login" element={<AuthPage key="login" />} />
+            <Route path="/register" element={<AuthPage register key="register" />} />
+            <Route
+              path="/admin"
+              element={
+                <Protected>
+                  <Admin />
+                </Protected>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <main className="empty-state">
+                  <h1>A road less travelled.</h1>
+                  <p>This page doesn’t exist.</p>
+                  <Link className="button primary" to="/">
+                    Return to showroom
+                  </Link>
+                </main>
+              }
+            />
+          </Routes>
+        </Suspense>
       </div>
       <Footer />
     </>

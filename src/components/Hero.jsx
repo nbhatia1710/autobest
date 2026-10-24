@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowDown, ArrowUpRight, Pause, Play, RotateCcw } from 'lucide-react';
+import { ArrowDown, Pause, Play, RotateCcw } from 'lucide-react';
 export default function Hero() {
   const video = useRef(null),
     [playing, setPlaying] = useState(false),
@@ -20,7 +20,9 @@ export default function Hero() {
           ref={video}
           className="hero-video"
           playsInline
-          preload="auto"
+          autoPlay
+          muted
+          preload="none"
           poster="/media/hero-poster.jpg"
           onError={() => setFailed(true)}
           onPlay={() => setPlaying(true)}
@@ -31,34 +33,11 @@ export default function Hero() {
         </video>
       )}
       <div className="hero-shade" />
-      <div className="hero-topline">
-        <span>
-          <i /> THE AUTOBEST COLLECTION
-        </span>
-        <span>EXCEPTIONAL CARS. PERSONAL SERVICE.</span>
-      </div>
-      <div className="hero-copy">
-        <p className="eyebrow">FOR THE LOVE OF THE DRIVE</p>
-        <h1>
-          Your next chapter.
-          <br />
-          <em>Extraordinary.</em>
-        </h1>
-        <p>
-          Distinctive cars. Considered choices.
-          <br />
-          Find the one that moves you.
-        </p>
-        <a className="button primary" href="#collection">
-          Explore the collection <ArrowUpRight size={18} />
-        </a>
-      </div>
+      <a className="hero-scroll" href="#collection" aria-label="Explore the collection">
+        <ArrowDown size={18} aria-hidden="true" />
+      </a>
       <div className="hero-bottom">
-        <a href="#collection">
-          <ArrowDown size={16} /> SCROLL TO DISCOVER
-        </a>
         <div className="video-controls">
-          <span>THE AUTOBEST FILM</span>
           <button
             disabled={failed}
             aria-label={playing ? 'Pause film' : 'Play film'}
