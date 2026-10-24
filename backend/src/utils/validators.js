@@ -10,6 +10,12 @@ export function isValidPassword(password, minLength = 6) {
   return password.length >= minLength;
 }
 
+export function isValidPositiveInteger(value) {
+  if (value == null || typeof value === 'string' && value.trim() === '') return false;
+  const num = Number(value);
+  return Number.isInteger(num) && num > 0;
+}
+
 export function validateVehicleInput(data, isUpdate = false) {
   const errors = {};
 
