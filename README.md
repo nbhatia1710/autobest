@@ -84,7 +84,7 @@ See [TEST-REPORT.md](docs/TEST-REPORT.md) for verified results, coverage scope a
 
 **Workflow reflection:** AI accelerated translating the brief into testable UI flows and caught photo/model mismatches during visual review. Automated checks provide useful evidence but do not establish that the future backend is secure or compatible. The owner should review the code, confirm the final backend contract, replace illustrative inventory with verified listings, and be able to explain the authorization and atomic-stock decisions. This reflection describes the assisted process; it does not claim unperformed human review.
 
-Each AI-assisted commit includes `Co-authored-by: OpenAI Codex <AI@users.noreply.github.com>`. [PROMPTS.md](PROMPTS.md) preserves the raw user request and supplied plan rather than an AI-written summary.
+The owner is the author and committer of this repository's commits. AI assistance is documented here; no individual outside the project is credited as a co-author. GitHub can associate a co-author email with an unrelated account, so contributor credit should be checked before adding a trailer. [PROMPTS.md](PROMPTS.md) preserves the raw user request and supplied plan rather than an AI-written summary.
 
 ## Media credits and sample data
 
