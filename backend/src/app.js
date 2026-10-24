@@ -4,6 +4,10 @@ import { UserRepository } from './repositories/UserRepository.js';
 import { AuthService } from './services/AuthService.js';
 import { AuthController } from './controllers/AuthController.js';
 import { createAuthRoutes } from './routes/authRoutes.js';
+import { VehicleRepository } from './repositories/VehicleRepository.js';
+import { VehicleService } from './services/VehicleService.js';
+import { VehicleController } from './controllers/VehicleController.js';
+import { createVehicleRoutes } from './routes/vehicleRoutes.js';
 import { createAuthMiddleware } from './middleware/auth.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -37,12 +41,18 @@ export function createApp(db, options = {}) {
   const userRepository = new UserRepository(db);
   const authService = new AuthService(userRepository, jwtSecret);
   const authController = new AuthController(authService);
+  const vehicleRepository = new VehicleRepository(db);
+  const vehicleService = new VehicleService(vehicleRepository);
+  const vehicleController = new VehicleController(vehicleService);
   const authMiddleware = createAuthMiddleware(jwtSecret);
 
   // Expose services/middleware for extension in other routes
   app.locals.db = db;
   app.locals.userRepository = userRepository;
   app.locals.authService = authService;
+  app.locals.vehicleRepository = vehicleRepository;
+  app.locals.vehicleService = vehicleService;
+  app.locals.vehicleController = vehicleController;
   app.locals.authMiddleware = authMiddleware;
 
   // Health check
@@ -52,6 +62,9 @@ export function createApp(db, options = {}) {
 
   // Mount Auth routes
   app.use('/api/auth', createAuthRoutes(authController));
+
+  // Mount Vehicles routes
+  app.use('/api/vehicles', createVehicleRoutes(vehicleController, authMiddleware));
 
   // Global Error Handler
   app.use(errorHandler);

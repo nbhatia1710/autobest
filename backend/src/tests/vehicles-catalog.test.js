@@ -108,7 +108,7 @@ describe('Vehicles Catalog & Search API (/api/vehicles)', () => {
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(2);
+      expect(res.body.length).toBe(3);
       // Mercedes-Benz AMG GT (98500), BMW M5 (86400), Honda CR-V (72900)
       for (const vehicle of res.body) {
         expect(vehicle.price).toBeGreaterThanOrEqual(70000);
