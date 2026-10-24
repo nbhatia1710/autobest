@@ -67,5 +67,28 @@ describe('Database and Schema Initialization', () => {
     const vehiclesCount = db.prepare('SELECT COUNT(*) as count FROM vehicles').get();
     expect(vehiclesCount.count).toBe(6);
   });
-});
 
+  it('refuses to seed default admin password in production', async () => {
+    await expect(
+      seedDatabase(db, {
+        nodeEnv: 'production',
+        adminPassword: 'AdminSecurePass123!',
+      })
+    ).rejects.toThrow(/default administrator password/i);
+  });
+
+  it('skips admin creation in production when no credentials provided', async () => {
+    await seedDatabase(db, {
+      nodeEnv: 'production',
+      adminEmail: null,
+      adminPassword: null,
+    });
+
+    const admin = db.prepare('SELECT * FROM users WHERE role = ?').get('admin');
+    expect(admin).toBeUndefined();
+
+    // Vehicles catalog still gets seeded safely
+    const vehiclesCount = db.prepare('SELECT COUNT(*) as count FROM vehicles').get();
+    expect(vehiclesCount.count).toBe(6);
+  });
+});

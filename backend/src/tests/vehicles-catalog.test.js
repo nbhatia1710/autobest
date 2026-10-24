@@ -135,5 +135,25 @@ describe('Vehicles Catalog & Search API (/api/vehicles)', () => {
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBe(0);
     });
+
+    it('rejects invalid search price range when min_price > max_price with 400 Bad Request', async () => {
+      const res = await request(app)
+        .get('/api/vehicles/search?min_price=100000&max_price=50000')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.code).toBe('INVALID_PRICE_RANGE');
+    });
+
+    it('rejects negative search price filters with 400 Bad Request', async () => {
+      const res = await request(app)
+        .get('/api/vehicles/search?min_price=-500')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.code).toBe('INVALID_PRICE_FILTER');
+    });
   });
 });

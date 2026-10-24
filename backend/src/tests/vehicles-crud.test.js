@@ -93,6 +93,34 @@ describe('Vehicles Management CRUD API (/api/vehicles)', () => {
       expect(res.status).toBe(400);
     });
 
+    it('rejects vehicle creation with an unsupported category', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          ...newVehicleData,
+          category: 'Hovercraft',
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.details.category).toMatch(/must be one of/i);
+    });
+
+    it('rejects vehicle creation with fractional cents (more than 2 decimal places)', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          ...newVehicleData,
+          price: 249000.999,
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+      expect(res.body.error.details.price).toMatch(/at most 2 decimal places/i);
+    });
+
     it('successfully creates a vehicle with 201 Created for admin', async () => {
       const res = await request(app)
         .post('/api/vehicles')
@@ -130,6 +158,16 @@ describe('Vehicles Management CRUD API (/api/vehicles)', () => {
         .send({ price: 125000 });
 
       expect(res.status).toBe(403);
+    });
+
+    it('rejects vehicle update with invalid vehicle ID format', async () => {
+      const res = await request(app)
+        .put('/api/vehicles/..%2F..%2Fpasswd')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ price: 125000 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('INVALID_ID');
     });
 
     it('returns 404 Not Found when updating a non-existent vehicle', async () => {
@@ -172,6 +210,15 @@ describe('Vehicles Management CRUD API (/api/vehicles)', () => {
 
       expect(res.status).toBe(403);
       expect(res.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('rejects deletion with invalid vehicle ID format', async () => {
+      const res = await request(app)
+        .delete('/api/vehicles/invalid!@%23id')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('INVALID_ID');
     });
 
     it('returns 404 Not Found when deleting a non-existent vehicle', async () => {

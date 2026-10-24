@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { getDatabase, closeDatabase } from './connection.js';
 import { initializeSchema } from './schema.js';
+import { DEFAULT_DEV_ADMIN_PASSWORD, DEFAULT_DEV_ADMIN_EMAIL } from '../config/index.js';
 
 dotenv.config();
 
@@ -104,21 +105,33 @@ export const initialVehicles = [
   },
 ];
 
-export async function seedDatabase(db) {
+export async function seedDatabase(db, options = {}) {
   initializeSchema(db);
 
-  // Seed default administrator
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@autobest.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'AdminSecurePass123!';
-  const existingAdmin = db.prepare('SELECT id FROM users WHERE email = ?').get(adminEmail);
+  const isProduction = (options.nodeEnv || process.env.NODE_ENV) === 'production';
+  const adminEmail = options.adminEmail !== undefined
+    ? options.adminEmail
+    : (process.env.ADMIN_EMAIL || (isProduction ? null : DEFAULT_DEV_ADMIN_EMAIL));
+  const adminPassword = options.adminPassword !== undefined
+    ? options.adminPassword
+    : (process.env.ADMIN_PASSWORD || (isProduction ? null : DEFAULT_DEV_ADMIN_PASSWORD));
 
-  if (!existingAdmin) {
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(adminPassword, salt);
-    db.prepare(`
-      INSERT INTO users (id, email, password, role)
-      VALUES (?, ?, ?, 'admin')
-    `).run('admin-default-id', adminEmail, hashedPassword);
+  // In production, refuse to silently seed published default credentials
+  if (isProduction && adminPassword === DEFAULT_DEV_ADMIN_PASSWORD) {
+    throw new Error('Refusing to seed database in production with default administrator password.');
+  }
+
+  if (adminEmail && adminPassword) {
+    const existingAdmin = db.prepare('SELECT id FROM users WHERE email = ?').get(adminEmail);
+
+    if (!existingAdmin) {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(adminPassword, salt);
+      db.prepare(`
+        INSERT INTO users (id, email, password, role)
+        VALUES (?, ?, ?, 'admin')
+      `).run('admin-default-id', adminEmail, hashedPassword);
+    }
   }
 
   // Seed initial vehicles

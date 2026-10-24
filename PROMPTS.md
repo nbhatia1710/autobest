@@ -103,3 +103,30 @@ if you dont have any credential ask to me directly do not take any decission by 
 read the commit tules properly
 befir starting go through repo for reference
 do not change any thing in frontend
+
+
+# Raw user request (Backend Hardening for MVP Deployment)
+
+Harden the existing AutoBest Motors backend for a safe MVP deployment.
+
+Work in the existing repository. First inspect `README.md`, `PROMPTS.md`, `docs/API-CONTRACT.md`, `docs/BACKEND-TEST-REPORT.md`, any `AGENTS.md` files, the current Git history, and the working tree. Treat uncommitted work as the user's: preserve it and do not overwrite, discard, or include it in commits without authorization.
+
+Keep the existing stack: Node.js, Express, SQLite, JWT, and bcrypt. Keep the current API contract and frontend behavior compatible. Focus on backend security, reliability, and deployment preparation. Do not redesign or modify the frontend unless an API compatibility fix is essential. Do not add payment processing, sales tax, shipping, or order history; the existing purchase endpoint only decrements stock.
+
+Address these issues found in the current backend:
+
+1. **CORS:** `backend/src/app.js` currently allows every origin even when it is not in the configured allowlist. Make the allowlist enforceable. Support the local development origins through explicit development configuration. Reject unlisted origins, and document how to configure production origins.
+
+2. **Secrets and administrator setup:** The backend has fallback JWT secrets and a known default administrator password. Remove unsafe production fallbacks. Require a strong `JWT_SECRET` in production and fail at startup with a clear error if it is missing or too weak. Ensure production administrator credentials are not silently created from published defaults. Keep local development and automated tests practical using clearly separated test/development configuration. Add a sanitized `backend/.env.example`; never add real secrets.
+
+3. **API hardening:** Review and implement appropriate security headers, request body size limits, and rate limits for registration and login. Ensure malformed JSON and unexpected errors return consistent JSON error responses without leaking stack traces or sensitive data. Keep authorization checks on all protected and administrator-only routes.
+
+4. **Input and database safety:** Review validation for every endpoint, including IDs, vehicle fields, search filters, and purchase/restock quantities. Reject invalid numeric ranges and unsupported fields safely. Review SQLite schema initialization and upgrades; add a versioned migration approach if needed so future schema changes do not depend on editing an already-run `CREATE TABLE IF NOT EXISTS`. Preserve atomic stock decrement behavior and its out-of-stock conflict response. Assess price storage for currency precision and make a migration-safe change only if it can preserve the existing API's price format and frontend compatibility.
+
+5. **Operations and documentation:** Document required production environment variables, local setup, database location and backup considerations, startup behavior, and the boundary between the current inventory decrement and a real order/payment workflow. Do not describe the backend as production-ready unless the implemented controls support that claim.
+
+6. **Verification:** Add or update backend tests for the security and configuration behavior you change. Run the backend test suite and coverage command, plus any relevant build or checks. Report the actual results; do not copy stale figures from the existing report. If a check cannot run, state why. Do not claim deployment or external verification.
+
+7. **Git:** Preserve the existing public history; do not rewrite commits or force-push. Follow the repository's current AI co-author and commit-message instructions. Commit only the backend hardening changes and related documentation/tests. Leave unrelated user changes untouched and uncommitted.
+
+At the end, summarize what changed, any remaining launch requirements, the exact verification results, and the commit hash.
