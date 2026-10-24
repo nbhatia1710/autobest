@@ -163,4 +163,76 @@ describe('Authentication API & Middleware (/api/auth)', () => {
       expect(res.body.error).toBeDefined();
     });
   });
+
+  describe('Auth Middleware (requireAuth & requireAdmin)', () => {
+    let customerToken;
+    let adminToken;
+
+    beforeEach(async () => {
+      // Create test route using middleware
+      const { requireAuth, requireAdmin } = app.locals.authMiddleware;
+      app.get('/api/test/protected', requireAuth, (req, res) => {
+        res.json({ message: 'authorized', user: req.user });
+      });
+      app.get('/api/test/admin-only', requireAuth, requireAdmin, (req, res) => {
+        res.json({ message: 'admin authorized' });
+      });
+
+      // Register customer & get token
+      const custRes = await request(app)
+        .post('/api/auth/register')
+        .send({ email: 'client@example.com', password: 'Password123!' });
+      const custLogin = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'client@example.com', password: 'Password123!' });
+      customerToken = custLogin.body.access_token;
+
+      // Seed admin into DB & login
+      const dbInstance = app.locals.db;
+      const adminPassHash = (await import('bcryptjs')).default.hashSync('AdminPass123!', 10);
+      dbInstance.prepare('INSERT INTO users (id, email, password, role) VALUES (?, ?, ?, ?)').run(
+        'adm-1',
+        'superadmin@example.com',
+        adminPassHash,
+        'admin'
+      );
+      const adminLogin = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'superadmin@example.com', password: 'AdminPass123!' });
+      adminToken = adminLogin.body.access_token;
+    });
+
+    it('rejects access without Authorization header with 401', async () => {
+      const res = await request(app).get('/api/test/protected');
+      expect(res.status).toBe(401);
+      expect(res.body.error.code).toBe('UNAUTHORIZED');
+    });
+
+    it('allows access with valid Bearer token', async () => {
+      const res = await request(app)
+        .get('/api/test/protected')
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.user.email).toBe('client@example.com');
+    });
+
+    it('rejects customer from admin-only endpoint with 403 Forbidden', async () => {
+      const res = await request(app)
+        .get('/api/test/admin-only')
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(403);
+      expect(res.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('grants admin access to admin-only endpoint with 200', async () => {
+      const res = await request(app)
+        .get('/api/test/admin-only')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('admin authorized');
+    });
+  });
 });
