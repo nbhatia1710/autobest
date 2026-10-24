@@ -43,7 +43,7 @@ Desktop screenshots were captured at 1440 × 1000 and mobile screenshots at 390 
 
 ## TDD and environment notes
 
-Initial validation/card tests were committed and run before those modules existed. API/auth/stock contract tests were likewise committed failing before the adapters were implemented. An admin access test preceded the admin component. Later interaction and error tests extend that baseline. The README documents AI assistance; the repository owner remains the author and committer.
+Initial validation/card tests were committed and run before those modules existed. API/auth/stock contract tests were likewise committed failing before the adapters were implemented. An admin access test preceded the admin component. Later interaction and error tests extend that baseline. The README documents AI assistance; the repository owner remains the author and committer, with OpenAI Codex listed as co-author using an unlinked reserved address.
 
 An initial parallel-worker startup timeout was resolved by running one Vitest worker. The multi-step component journey timeout is 15 seconds, accommodating DOM instrumentation overhead on this machine. Assertions remain explicit; no failed tests are skipped. Final coverage run: 29/29 passed. Final browser run: 3/3 passed.
 
